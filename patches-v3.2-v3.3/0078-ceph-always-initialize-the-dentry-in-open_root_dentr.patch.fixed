@@ -1,0 +1,50 @@
+From d46cfba5363a163851dc768f717f34185527a472 Mon Sep 17 00:00:00 2001
+From: Alex Elder <elder@dreamhost.com>
+Date: Wed, 4 Jan 2012 16:30:15 -0600
+Subject: [PATCH] ceph: always initialize the dentry in open_root_dentry()
+
+When open_root_dentry() gets a dentry via d_obtain_alias() it does
+not get initialized.  If the dentry obtained came from the cache,
+this is OK.  But if not, the result is an improperly initialized
+dentry.
+
+To fix this, call ceph_init_dentry() regardless of which path
+produced the dentry.  That function returns immediately for a dentry
+that is already initialized, it is safe to use either way.
+
+(Credit to Sage, who suggested this fix.)
+
+Signed-off-by: Alex Elder <aelder@sgi.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/super.c |    7 +++----
+ 1 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/fs/ceph/super.c b/fs/ceph/super.c
+index b48f15f..ec74313 100644
+--- a/fs/ceph/super.c
++++ b/fs/ceph/super.c
+@@ -640,17 +640,16 @@
+ 		req->r_target_inode = NULL;
+ 		dout("open_root_inode success\n");
+ 		if (ceph_ino(inode) == CEPH_INO_ROOT &&
+-		    fsc->sb->s_root == NULL) {
++		    fsc->sb->s_root == NULL)
+ 			root = d_alloc_root(inode);
+ 			if (!root) {
+ 				iput(inode);
+ 				root = ERR_PTR(-ENOMEM);
+ 				goto out;
+ 			}
+-			ceph_init_dentry(root);
+-		} else {
++		else
+ 			root = d_obtain_alias(inode);
+-		}
++		ceph_init_dentry(root);
+ 		dout("open_root_inode success, root dentry is %p\n", root);
+ 	} else {
+ 		root = ERR_PTR(err);
+-- 
+1.7.3.4
+

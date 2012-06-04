@@ -1,0 +1,161 @@
+From f0023bc617ba600956b9226f1806033d7486c8ba Mon Sep 17 00:00:00 2001
+From: Sage Weil <sage@newdream.net>
+Date: Fri, 28 Oct 2011 10:02:42 -0700
+Subject: [PATCH] vfs: add d_prune dentry operation
+
+This adds a d_prune dentry operation that is called by the VFS prior to
+pruning (i.e. unhashing and killing) a hashed dentry from the dcache.
+Wrap dentry_lru_del() and use the new _prune() helper in the cases where we
+are about to unhash and kill the dentry.
+
+This will be used by Ceph to maintain a flag indicating whether the
+complete contents of a directory are contained in the dcache, allowing it
+to satisfy lookups and readdir without addition server communication.
+
+Renumber a few DCACHE_* #defines to group DCACHE_OP_PRUNE with the other
+DCACHE_OP_ bits.
+
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ Documentation/filesystems/Locking |    1 +
+ fs/dcache.c                       |   40 ++++++++++++++++++++++++++++++++----
+ include/linux/dcache.h            |    8 ++++--
+ 3 files changed, 41 insertions(+), 8 deletions(-)
+
+diff --git a/Documentation/filesystems/Locking b/Documentation/filesystems/Locking
+index 6533807..d819ba1 100644
+--- a/Documentation/filesystems/Locking
++++ b/Documentation/filesystems/Locking
+@@ -29,6 +29,7 @@ d_hash		no		no		no		maybe
+ d_compare:	yes		no		no		maybe
+ d_delete:	no		yes		no		no
+ d_release:	no		no		yes		no
++d_prune:        no              yes             no              no
+ d_iput:		no		no		yes		no
+ d_dname:	no		no		no		no
+ d_automount:	no		no		yes		no
+diff --git a/fs/dcache.c b/fs/dcache.c
+index a88948b..274f13e 100644
+--- a/fs/dcache.c
++++ b/fs/dcache.c
+@@ -225,7 +225,7 @@ static void dentry_unlink_inode(struct dentry * dentry)
+ }
+ 
+ /*
+- * dentry_lru_(add|del|move_tail) must be called with d_lock held.
++ * dentry_lru_(add|del|prune|move_tail) must be called with d_lock held.
+  */
+ static void dentry_lru_add(struct dentry *dentry)
+ {
+@@ -245,6 +245,9 @@ static void __dentry_lru_del(struct dentry *dentry)
+ 	dentry_stat.nr_unused--;
+ }
+ 
++/*
++ * Remove a dentry with references from the LRU.
++ */
+ static void dentry_lru_del(struct dentry *dentry)
+ {
+ 	if (!list_empty(&dentry->d_lru)) {
+@@ -254,6 +257,23 @@ static void dentry_lru_del(struct dentry *dentry)
+ 	}
+ }
+ 
++/*
++ * Remove a dentry that is unreferenced and about to be pruned
++ * (unhashed and destroyed) from the LRU, and inform the file system.
++ * This wrapper should be called _prior_ to unhashing a victim dentry.
++ */
++static void dentry_lru_prune(struct dentry *dentry)
++{
++	if (!list_empty(&dentry->d_lru)) {
++		if (dentry->d_flags & DCACHE_OP_PRUNE)
++			dentry->d_op->d_prune(dentry);
++
++		spin_lock(&dcache_lru_lock);
++		__dentry_lru_del(dentry);
++		spin_unlock(&dcache_lru_lock);
++	}
++}
++
+ static void dentry_lru_move_tail(struct dentry *dentry)
+ {
+ 	spin_lock(&dcache_lru_lock);
+@@ -403,8 +423,12 @@ relock:
+ 
+ 	if (ref)
+ 		dentry->d_count--;
+-	/* if dentry was on the d_lru list delete it from there */
+-	dentry_lru_del(dentry);
++	/*
++	 * if dentry was on the d_lru list delete it from there.
++	 * inform the fs via d_prune that this dentry is about to be
++	 * unhashed and destroyed.
++	 */
++	dentry_lru_prune(dentry);
+ 	/* if it was on the hash then remove it */
+ 	__d_drop(dentry);
+ 	return d_kill(dentry, parent);
+@@ -854,8 +878,12 @@ static void shrink_dcache_for_umount_subtree(struct dentry *dentry)
+ 		do {
+ 			struct inode *inode;
+ 
+-			/* detach from the system */
+-			dentry_lru_del(dentry);
++			/*
++			 * remove the dentry from the lru, and inform
++			 * the fs that this dentry is about to be
++			 * unhashed and destroyed.
++			 */
++			dentry_lru_prune(dentry);
+ 			__d_shrink(dentry);
+ 
+ 			if (dentry->d_count != 0) {
+@@ -1283,6 +1311,8 @@ void d_set_d_op(struct dentry *dentry, const struct dentry_operations *op)
+ 		dentry->d_flags |= DCACHE_OP_REVALIDATE;
+ 	if (op->d_delete)
+ 		dentry->d_flags |= DCACHE_OP_DELETE;
++	if (op->d_prune)
++		dentry->d_flags |= DCACHE_OP_PRUNE;
+ 
+ }
+ EXPORT_SYMBOL(d_set_d_op);
+diff --git a/include/linux/dcache.h b/include/linux/dcache.h
+index 62157c0..4df9261 100644
+--- a/include/linux/dcache.h
++++ b/include/linux/dcache.h
+@@ -165,6 +165,7 @@ struct dentry_operations {
+ 			unsigned int, const char *, const struct qstr *);
+ 	int (*d_delete)(const struct dentry *);
+ 	void (*d_release)(struct dentry *);
++	void (*d_prune)(struct dentry *);
+ 	void (*d_iput)(struct dentry *, struct inode *);
+ 	char *(*d_dname)(struct dentry *, char *, int);
+ 	struct vfsmount *(*d_automount)(struct path *);
+@@ -184,8 +185,9 @@ struct dentry_operations {
+ #define DCACHE_OP_COMPARE	0x0002
+ #define DCACHE_OP_REVALIDATE	0x0004
+ #define DCACHE_OP_DELETE	0x0008
++#define DCACHE_OP_PRUNE         0x0010
+ 
+-#define	DCACHE_DISCONNECTED	0x0010
++#define	DCACHE_DISCONNECTED	0x0020
+      /* This dentry is possibly not currently connected to the dcache tree, in
+       * which case its parent will either be itself, or will have this flag as
+       * well.  nfsd will not use a dentry with this bit set, but will first
+@@ -196,8 +198,8 @@ struct dentry_operations {
+       * dentry into place and return that dentry rather than the passed one,
+       * typically using d_splice_alias. */
+ 
+-#define DCACHE_REFERENCED	0x0020  /* Recently used, don't discard. */
+-#define DCACHE_RCUACCESS	0x0040	/* Entry has ever been RCU-visible */
++#define DCACHE_REFERENCED	0x0040  /* Recently used, don't discard. */
++#define DCACHE_RCUACCESS	0x0080	/* Entry has ever been RCU-visible */
+ 
+ #define DCACHE_CANT_MOUNT	0x0100
+ #define DCACHE_GENOCIDE		0x0200
+-- 
+1.7.3.4
+

@@ -1,0 +1,105 @@
+From b6316429af7f365f307dfd2b6a7a42f2563aef19 Mon Sep 17 00:00:00 2001
+From: Josef Bacik <josef@redhat.com>
+Date: Fri, 30 Sep 2011 15:23:54 -0400
+Subject: [PATCH] Btrfs: force a page fault if we have a shorty copy on a page boundary
+
+A user reported a problem where ceph was getting into 100% cpu usage while doing
+some writing.  It turns out it's because we were doing a short write on a not
+uptodate page, which means we'd fall back at one page at a time and fault the
+page in.  The problem is our position is on the page boundary, so our fault in
+logic wasn't actually reading the page, so we'd just spin forever or until the
+page got read in by somebody else.  This will force a readpage if we end up
+doing a short copy.  Alexandre could reproduce this easily with ceph and reports
+it fixes his problem.  I also wrote a reproducer that no longer hangs my box
+with this patch.  Thanks,
+
+Reported-and-tested-by: Alexandre Oliva <aoliva@redhat.com>
+Signed-off-by: Josef Bacik <josef@redhat.com>
+Signed-off-by: Chris Mason <chris.mason@oracle.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/btrfs/file.c |   24 ++++++++++++++++--------
+ 1 files changed, 16 insertions(+), 8 deletions(-)
+
+diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
+index 98d95bb..e730510 100644
+--- a/fs/btrfs/file.c
++++ b/fs/btrfs/file.c
+@@ -1036,11 +1036,13 @@ out:
+  * on error we return an unlocked page and the error value
+  * on success we return a locked page and 0
+  */
+-static int prepare_uptodate_page(struct page *page, u64 pos)
++static int prepare_uptodate_page(struct page *page, u64 pos,
++				 bool force_uptodate)
+ {
+ 	int ret = 0;
+ 
+-	if ((pos & (PAGE_CACHE_SIZE - 1)) && !PageUptodate(page)) {
++	if (((pos & (PAGE_CACHE_SIZE - 1)) || force_uptodate) &&
++	    !PageUptodate(page)) {
+ 		ret = btrfs_readpage(NULL, page);
+ 		if (ret)
+ 			return ret;
+@@ -1061,7 +1063,7 @@ static int prepare_uptodate_page(struct page *page, u64 pos)
+ static noinline int prepare_pages(struct btrfs_root *root, struct file *file,
+ 			 struct page **pages, size_t num_pages,
+ 			 loff_t pos, unsigned long first_index,
+-			 size_t write_bytes)
++			 size_t write_bytes, bool force_uptodate)
+ {
+ 	struct extent_state *cached_state = NULL;
+ 	int i;
+@@ -1086,10 +1088,11 @@ again:
+ 		}
+ 
+ 		if (i == 0)
+-			err = prepare_uptodate_page(pages[i], pos);
++			err = prepare_uptodate_page(pages[i], pos,
++						    force_uptodate);
+ 		if (i == num_pages - 1)
+ 			err = prepare_uptodate_page(pages[i],
+-						    pos + write_bytes);
++						    pos + write_bytes, false);
+ 		if (err) {
+ 			page_cache_release(pages[i]);
+ 			faili = i - 1;
+@@ -1158,6 +1161,7 @@ static noinline ssize_t __btrfs_buffered_write(struct file *file,
+ 	size_t num_written = 0;
+ 	int nrptrs;
+ 	int ret = 0;
++	bool force_page_uptodate = false;
+ 
+ 	nrptrs = min((iov_iter_count(i) + PAGE_CACHE_SIZE - 1) /
+ 		     PAGE_CACHE_SIZE, PAGE_CACHE_SIZE /
+@@ -1200,7 +1204,8 @@ static noinline ssize_t __btrfs_buffered_write(struct file *file,
+ 		 * contents of pages from loop to loop
+ 		 */
+ 		ret = prepare_pages(root, file, pages, num_pages,
+-				    pos, first_index, write_bytes);
++				    pos, first_index, write_bytes,
++				    force_page_uptodate);
+ 		if (ret) {
+ 			btrfs_delalloc_release_space(inode,
+ 					num_pages << PAGE_CACHE_SHIFT);
+@@ -1217,12 +1222,15 @@ static noinline ssize_t __btrfs_buffered_write(struct file *file,
+ 		if (copied < write_bytes)
+ 			nrptrs = 1;
+ 
+-		if (copied == 0)
++		if (copied == 0) {
++			force_page_uptodate = true;
+ 			dirty_pages = 0;
+-		else
++		} else {
++			force_page_uptodate = false;
+ 			dirty_pages = (copied + offset +
+ 				       PAGE_CACHE_SIZE - 1) >>
+ 				       PAGE_CACHE_SHIFT;
++		}
+ 
+ 		/*
+ 		 * If we had a short copy we need to release the excess delaloc
+-- 
+1.7.3.4
+

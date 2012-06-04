@@ -1,0 +1,32 @@
+From 9bae113a085b790de384bf86f09e15b42a65a985 Mon Sep 17 00:00:00 2001
+From: Sage Weil <sage@newdream.net>
+Date: Tue, 26 Jul 2011 11:27:59 -0700
+Subject: [PATCH 12/25] ceph: only link open operations to directory unsafe list if O_CREAT|O_TRUNC
+
+We only need to put these on the directory unsafe list if they have
+side effects that fsync(2) should flush out.
+
+Reviewed-by: Yehuda Sadeh <yehuda@hq.newdream.net>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/file.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+index 9b667e9..e0115eb 100644
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -194,7 +194,8 @@ int ceph_open(struct inode *inode, struct file *file)
+ 	req->r_inode = inode;
+ 	ihold(inode);
+ 	req->r_num_caps = 1;
+-	err = ceph_mdsc_do_request(mdsc, parent_inode, req);
++	err = ceph_mdsc_do_request(mdsc, (flags & (O_CREAT|O_TRUNC)) ?
++				   parent_inode : NULL, req);
+ 	if (!err)
+ 		err = ceph_init_file(inode, file, req->r_fmode);
+ 	ceph_mdsc_put_request(req);
+-- 
+1.7.3.4
+

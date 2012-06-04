@@ -1,0 +1,17 @@
+0001-Don-t-pass-nameidata-when-calling-vfs_create-from-mk.patch
+0079-vfs-export-symbol-d_find_any_alias.patch
+There patches are related about VFS. They can be patched normally, 
+
+0035-Btrfs-force-a-page-fault-if-we-have-a-shorty-copy-on.patch
+0052-ext4-fix-race-in-xattr-block-allocation-path.patch
+0083-Btrfs-protect-orphan-block-rsv-with-spin_lock.patch
+This patches are related about btrfs and ext4. They can not be patched normally,
+just ignore them. 
+
+0053-vfs-add-d_prune-dentry-operation.patch
+This patch is related about VFS(dentry cache), It can not be patched normally,
+but I have fixed it, and rename it as 0053-vfs-add-d_prune-dentry-operation.patch.fixed 
+
+0078-ceph-always-initialize-the-dentry-in-open_root_dentr.patch
+This patch is related about ceph itself, It can not be patched normally,
+but I have fixed it, and rename it as 0078-ceph-always-initialize-the-dentry-in-open_root_dentr.patch.fixed 
