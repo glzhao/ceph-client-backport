@@ -15,3 +15,8 @@ but I have fixed it, and rename it as 0053-vfs-add-d_prune-dentry-operation.patc
 0078-ceph-always-initialize-the-dentry-in-open_root_dentr.patch
 This patch is related about ceph itself, It can not be patched normally,
 but I have fixed it, and rename it as 0078-ceph-always-initialize-the-dentry-in-open_root_dentr.patch.fixed 
+
+0087-ceph-create-a-new-session-lock-to-avoid-lock-inversi.patch
+This patch is related about ceph itself, It can not be patched normally, because of the order with other
+patches, but I have fixed it, and rename it as 0087-ceph-create-a-new-session-lock-to-avoid-lock-inversi.patch.fixed
+

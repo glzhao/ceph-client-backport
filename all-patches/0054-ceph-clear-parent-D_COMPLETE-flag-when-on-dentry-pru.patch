@@ -1,0 +1,102 @@
+From b58dc4100b9190f2cb437f1f67ffcb9f9acc4923 Mon Sep 17 00:00:00 2001
+From: Sage Weil <sage@newdream.net>
+Date: Tue, 15 Mar 2011 15:53:40 -0700
+Subject: [PATCH] ceph: clear parent D_COMPLETE flag when on dentry prune
+
+When the VFS prunes a dentry from the cache, clear the D_COMPLETE flag
+on the parent dentry.  Do this for the live and snapshotted namespaces. Do
+not bother for the .snap dir contents, since we do not cache that.
+
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/dir.c   |   28 ++++++++++++++++++++++++++++
+ fs/ceph/super.h |   13 +++++++++++++
+ 2 files changed, 41 insertions(+), 0 deletions(-)
+
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index 382abc9..97fb155 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -1092,7 +1092,33 @@ static int ceph_snapdir_d_revalidate(struct dentry *dentry,
+ 	return 1;
+ }
+ 
++/*
++ * When the VFS prunes a dentry from the cache, we need to clear the
++ * complete flag on the parent directory.
++ *
++ * Called under dentry->d_lock.
++ */
++static void ceph_d_prune(struct dentry *dentry)
++{
++	struct ceph_dentry_info *di;
++
++	dout("d_release %p\n", dentry);
++
++	/* do we have a valid parent? */
++	if (!dentry->d_parent || IS_ROOT(dentry))
++		return;
++
++	/* if we are not hashed, we don't affect D_COMPLETE */
++	if (d_unhashed(dentry))
++		return;
+ 
++	/*
++	 * we hold d_lock, so d_parent is stable, and d_fsdata is never
++	 * cleared until d_release
++	 */
++	di = ceph_dentry(dentry->d_parent);
++	clear_bit(CEPH_D_COMPLETE, &di->flags);
++}
+ 
+ /*
+  * read() on a dir.  This weird interface hack only works if mounted
+@@ -1306,6 +1332,7 @@ const struct inode_operations ceph_dir_iops = {
+ const struct dentry_operations ceph_dentry_ops = {
+ 	.d_revalidate = ceph_d_revalidate,
+ 	.d_release = ceph_d_release,
++	.d_prune = ceph_d_prune,
+ };
+ 
+ const struct dentry_operations ceph_snapdir_dentry_ops = {
+@@ -1315,4 +1342,5 @@ const struct dentry_operations ceph_snapdir_dentry_ops = {
+ 
+ const struct dentry_operations ceph_snap_dentry_ops = {
+ 	.d_release = ceph_d_release,
++	.d_prune = ceph_d_prune,
+ };
+diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+index b01442a..98e6069 100644
+--- a/fs/ceph/super.h
++++ b/fs/ceph/super.h
+@@ -203,6 +203,7 @@ struct ceph_inode_xattr {
+  * Ceph dentry state
+  */
+ struct ceph_dentry_info {
++	unsigned long flags;
+ 	struct ceph_mds_session *lease_session;
+ 	u32 lease_gen, lease_shared_gen;
+ 	u32 lease_seq;
+@@ -213,6 +214,18 @@ struct ceph_dentry_info {
+ 	u64 offset;
+ };
+ 
++/*
++ * dentry flags
++ *
++ * The locking for D_COMPLETE is a bit odd:
++ *  - we can clear it at almost any time (see ceph_d_prune)
++ *  - it is only meaningful if:
++ *    - we hold dir inode i_lock
++ *    - we hold dir FILE_SHARED caps
++ *    - the dentry D_COMPLETE is set
++ */
++#define CEPH_D_COMPLETE 1  /* if set, d_u.d_subdirs is complete directory */
++
+ struct ceph_inode_xattrs_info {
+ 	/*
+ 	 * (still encoded) xattr blob. we avoid the overhead of parsing
+-- 
+1.7.3.4
+

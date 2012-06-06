@@ -1,0 +1,50 @@
+From 5706b27deae29ceee26d0c20112f087a9b841575 Mon Sep 17 00:00:00 2001
+From: Al Viro <viro@zeniv.linux.org.uk>
+Date: Tue, 26 Jul 2011 04:52:22 -0400
+Subject: [PATCH] ceph: propagate umode_t
+
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/caps.c  |    4 ++--
+ fs/ceph/super.h |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/fs/ceph/caps.c b/fs/ceph/caps.c
+index 8b53193..b60fc8bf 100644
+--- a/fs/ceph/caps.c
++++ b/fs/ceph/caps.c
+@@ -928,7 +928,7 @@ static int send_cap_msg(struct ceph_mds_session *session,
+ 			u64 size, u64 max_size,
+ 			struct timespec *mtime, struct timespec *atime,
+ 			u64 time_warp_seq,
+-			uid_t uid, gid_t gid, mode_t mode,
++			uid_t uid, gid_t gid, umode_t mode,
+ 			u64 xattr_version,
+ 			struct ceph_buffer *xattrs_buf,
+ 			u64 follows)
+@@ -1078,7 +1078,7 @@ static int __send_cap(struct ceph_mds_client *mdsc, struct ceph_cap *cap,
+ 	u64 size, max_size;
+ 	struct timespec mtime, atime;
+ 	int wake = 0;
+-	mode_t mode;
++	umode_t mode;
+ 	uid_t uid;
+ 	gid_t gid;
+ 	struct ceph_mds_session *session;
+diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+index edcbf37..cb3652b 100644
+--- a/fs/ceph/super.h
++++ b/fs/ceph/super.h
+@@ -136,7 +136,7 @@ struct ceph_cap_snap {
+ 	int issued, dirty;
+ 	struct ceph_snap_context *context;
+ 
+-	mode_t mode;
++	umode_t mode;
+ 	uid_t uid;
+ 	gid_t gid;
+ 
+-- 
+1.7.3.4
+

@@ -48,7 +48,7 @@ index 9895400..63c52f3 100644
 +++ b/fs/ceph/dir.c
 @@ -975,10 +975,10 @@ static int dentry_lease_is_valid(struct dentry *dentry)
  	di = ceph_dentry(dentry);
- 	if (di && di->lease_session) {
+	if (di->lease_session) {
  		s = di->lease_session;
 -		spin_lock(&s->s_cap_lock);
 +		spin_lock(&s->s_gen_ttl_lock);
