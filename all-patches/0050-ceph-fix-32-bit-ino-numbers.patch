@@ -1,0 +1,48 @@
+From 3310f7541f0c991b51324a7712db51fb8f912601 Mon Sep 17 00:00:00 2001
+From: Amon Ott <a.ott@m-privacy.de>
+Date: Thu, 20 Oct 2011 13:04:07 -0700
+Subject: [PATCH 50/51] ceph: fix 32-bit ino numbers
+
+Fix 32-bit ino generation to not always be 1.
+
+Signed-off-by: Amon Ott <a.ott@m-privacy.de>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/super.h |   11 ++++++-----
+ 1 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+index 5c72430..b01442a 100644
+--- a/fs/ceph/super.h
++++ b/fs/ceph/super.h
+@@ -346,9 +346,10 @@ static inline struct ceph_vino ceph_vino(struct inode *inode)
+  * x86_64+ino32  64                     32
+  * x86_64        64                     64
+  */
+-static inline u32 ceph_ino_to_ino32(ino_t ino)
++static inline u32 ceph_ino_to_ino32(__u64 vino)
+ {
+-	ino ^= ino >> (sizeof(ino) * 8 - 32);
++	u32 ino = vino & 0xffffffff;
++	ino ^= vino >> 32;
+ 	if (!ino)
+ 		ino = 1;
+ 	return ino;
+@@ -359,11 +360,11 @@ static inline u32 ceph_ino_to_ino32(ino_t ino)
+  */
+ static inline ino_t ceph_vino_to_ino(struct ceph_vino vino)
+ {
+-	ino_t ino = (ino_t)vino.ino;  /* ^ (vino.snap << 20); */
+ #if BITS_PER_LONG == 32
+-	ino = ceph_ino_to_ino32(ino);
++	return ceph_ino_to_ino32(vino.ino);
++#else
++	return (ino_t)vino.ino;
+ #endif
+-	return ino;
+ }
+ 
+ /*
+-- 
+1.7.3.4
+

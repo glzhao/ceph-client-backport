@@ -21,7 +21,7 @@ patches-can-not-patch-origin:
 ceph-related patches, can't be applied and must be fixed. These 
 are origin version
 all-patches:
-list all patches
+list all patches that can be patched normally
 files-changed-by-patches:
 list the changed files by all the patches
 patch-list:

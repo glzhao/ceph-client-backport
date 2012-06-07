@@ -1,0 +1,31 @@
+From 80834312a4da1405a9bc788313c67643de6fcb4c Mon Sep 17 00:00:00 2001
+From: Xi Wang <xi.wang@gmail.com>
+Date: Thu, 16 Feb 2012 11:56:29 -0500
+Subject: [PATCH 095/154] ceph: fix overflow check in build_snap_context()
+
+The overflow check for a + n * b should be (n > (ULONG_MAX - a) / b),
+rather than (n > ULONG_MAX / b - a).
+
+Signed-off-by: Xi Wang <xi.wang@gmail.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/snap.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/fs/ceph/snap.c b/fs/ceph/snap.c
+index a559c80..f04c096 100644
+--- a/fs/ceph/snap.c
++++ b/fs/ceph/snap.c
+@@ -331,7 +331,7 @@ static int build_snap_context(struct ceph_snap_realm *realm)
+ 
+ 	/* alloc new snap context */
+ 	err = -ENOMEM;
+-	if (num > ULONG_MAX / sizeof(u64) - sizeof(*snapc))
++	if (num > (ULONG_MAX - sizeof(*snapc)) / sizeof(u64))
+ 		goto fail;
+ 	snapc = kzalloc(sizeof(*snapc) + num*sizeof(u64), GFP_NOFS);
+ 	if (!snapc)
+-- 
+1.7.3.4
+

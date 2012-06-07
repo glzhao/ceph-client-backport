@@ -1,0 +1,33 @@
+From c047be09349752b8a4dac27bc9f130bf4d592f11 Mon Sep 17 00:00:00 2001
+From: Sage Weil <sage@inktank.com>
+Date: Mon, 14 May 2012 12:34:50 -0700
+Subject: [PATCH 181/199] ceph: ignore preferred_osd field
+
+Old users may not expect EINVAL, and there is no clear user-visibile
+behavior change now that we ignore it.
+
+Signed-off-by: Sage Weil <sage@inktank.com>
+Reviewed-by: Alex Elder <elder@inktank.com>
+Signed-off-by: Guangliang Zhao <lucienchao@gmail.com>
+---
+ fs/ceph/ioctl.c |    4 ----
+ 1 files changed, 0 insertions(+), 4 deletions(-)
+
+diff --git a/fs/ceph/ioctl.c b/fs/ceph/ioctl.c
+index c0b7314..8e3fb69 100644
+--- a/fs/ceph/ioctl.c
++++ b/fs/ceph/ioctl.c
+@@ -39,10 +39,6 @@ static long __validate_layout(struct ceph_mds_client *mdsc,
+ {
+ 	int i, err;
+ 
+-	/* preferred_osd is no longer supported */
+-	if (l->preferred_osd != -1)
+-		return -EINVAL;
+-
+ 	/* validate striping parameters */
+ 	if ((l->object_size & ~PAGE_MASK) ||
+ 	    (l->stripe_unit & ~PAGE_MASK) ||
+-- 
+1.7.3.4
+

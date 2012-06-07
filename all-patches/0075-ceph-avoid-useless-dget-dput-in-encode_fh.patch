@@ -1,0 +1,42 @@
+From ee6b1baf67591b6d7ce1a6a07544343433d5ec9e Mon Sep 17 00:00:00 2001
+From: Sage Weil <sage@newdream.net>
+Date: Tue, 3 Jan 2012 08:20:40 -0800
+Subject: [PATCH 75/77] ceph: avoid useless dget/dput in encode_fh
+
+Nothing we do here sleeps, so just do it under d_lock and avoid the dget/
+dput entirely.
+
+Reported-by: Al Viro <viro@ZenIV.linux.org.uk>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/export.c |    6 ++----
+ 1 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/fs/ceph/export.c b/fs/ceph/export.c
+index 9fbcdec..fbb2a64 100644
+--- a/fs/ceph/export.c
++++ b/fs/ceph/export.c
+@@ -56,9 +56,7 @@ static int ceph_encode_fh(struct dentry *dentry, u32 *rawfh, int *max_len,
+ 		return -EINVAL;
+ 
+ 	spin_lock(&dentry->d_lock);
+-	parent = dget(dentry->d_parent);
+-	spin_unlock(&dentry->d_lock);
+-
++	parent = dentry->d_parent;
+ 	if (*max_len >= connected_handle_length) {
+ 		dout("encode_fh %p connectable\n", dentry);
+ 		cfh->ino = ceph_ino(dentry->d_inode);
+@@ -81,7 +79,7 @@ static int ceph_encode_fh(struct dentry *dentry, u32 *rawfh, int *max_len,
+ 		*max_len = handle_length;
+ 		type = 255;
+ 	}
+-	dput(parent);
++	spin_unlock(&dentry->d_lock);
+ 	return type;
+ }
+ 
+-- 
+1.7.3.4
+

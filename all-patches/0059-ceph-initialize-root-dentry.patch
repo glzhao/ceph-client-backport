@@ -1,0 +1,54 @@
+From 774ac21da76f5c3018428725074e27a3fd40b128 Mon Sep 17 00:00:00 2001
+From: Sage Weil <sage@newdream.net>
+Date: Fri, 11 Nov 2011 09:48:08 -0800
+Subject: [PATCH 60/61] ceph: initialize root dentry
+
+Set up d_fsdata on the root dentry.  This fixes a NULL pointer dereference
+in ceph_d_prune on umount.  It also means we can eventually strip out all
+of the conditional checks on d_fsdata because it is now set unconditionally
+(prior to setting up the d_ops).
+
+Fix the ceph_d_prune debug print while we're here.
+
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/dir.c   |    2 +-
+ fs/ceph/super.c |    6 ++++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index 2abd0df..bca3948 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -1143,7 +1143,7 @@ static void ceph_d_prune(struct dentry *dentry)
+ {
+ 	struct ceph_dentry_info *di;
+ 
+-	dout("d_release %p\n", dentry);
++	dout("ceph_d_prune %p\n", dentry);
+ 
+ 	/* do we have a valid parent? */
+ 	if (!dentry->d_parent || IS_ROOT(dentry))
+diff --git a/fs/ceph/super.c b/fs/ceph/super.c
+index a90846f..8dc73a5 100644
+--- a/fs/ceph/super.c
++++ b/fs/ceph/super.c
+@@ -638,10 +638,12 @@ static struct dentry *open_root_dentry(struct ceph_fs_client *fsc,
+ 	if (err == 0) {
+ 		dout("open_root_inode success\n");
+ 		if (ceph_ino(req->r_target_inode) == CEPH_INO_ROOT &&
+-		    fsc->sb->s_root == NULL)
++		    fsc->sb->s_root == NULL) {
+ 			root = d_alloc_root(req->r_target_inode);
+-		else
++			ceph_init_dentry(root);
++		} else {
+ 			root = d_obtain_alias(req->r_target_inode);
++		}
+ 		req->r_target_inode = NULL;
+ 		dout("open_root_inode success, root dentry is %p\n", root);
+ 	} else {
+-- 
+1.7.3.4
+
