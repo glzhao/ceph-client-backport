@@ -1,3 +1,12 @@
+ceph-backport: ceph: create a new session lock to avoid lock inversion
+
+This patch conflicts with patch(ceph: remove unnecessary d_fsdata 
+conditional checks, commit is 3d8eb7a94e8f25a33362f708974ac7daae9e84f8). 
+There will be fuzz when push this patch, so fixed it.
+
+NOTE:
+	All above commit is based on linus's kernel tree.
+
 From d8fb02abdc39f92a1066313e2b17047876afa8f9 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 12 Jan 2012 17:48:10 -0800

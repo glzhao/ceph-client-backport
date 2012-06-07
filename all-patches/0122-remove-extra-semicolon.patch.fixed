@@ -1,0 +1,27 @@
+ceph-backport: remove extra semicolon
+
+This a part of the patch(treewide: remove extra semicolons 
+from various parts of the kernel, commit is 699324871fcc36
+50f2023c5e36cb119a92d7894b) which is from linus' kernel tree. 
+The patch can't be patched normally, and the following part 
+is essential for the next patch, so we pick up part of the 
+origin patch, and that is this patch.
+
+NOTE:
+	All above commit is based on linus's kernel tree.
+
+---
+
+Index: linux-3.0/drivers/block/rbd.c
+===================================================================
+--- linux-3.0.orig/drivers/block/rbd.c
++++ linux-3.0/drivers/block/rbd.c
+@@ -189,7 +189,7 @@ static ssize_t rbd_snap_add(struct devic
+ 			    const char *buf,
+ 			    size_t count);
+ static void __rbd_remove_snap_dev(struct rbd_device *rbd_dev,
+-				  struct rbd_snap *snap);;
++				  struct rbd_snap *snap);
+ 
+ 
+ static struct rbd_device *dev_to_rbd(struct device *dev)
