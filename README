@@ -22,6 +22,8 @@ ceph-related patches, can't be applied and must be fixed. These
 are origin version
 all-patches:
 list all patches
+files-changed-by-patches:
+list the changed files by all the patches
 patch-list:
 the content of all directorys
 note:
