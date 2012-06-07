@@ -1,6 +1,6 @@
 ceph-backport: vfs: add d_prune dentry operation
 
-This is base on the patch(vfs: add d_prune dentry operation, 
+This is based on the patch(vfs: add d_prune dentry operation, 
 commit is f0023bc617ba600956b9226f1806033d7486c8ba). The origin 
 patch can't be patched normally because of two parts:
 	1)Function flow of shrink_dcache_for_umount_subtree changes
@@ -8,7 +8,9 @@ patch can't be patched normally because of two parts:
 This is the new patch after the issues have be fixed.
 
 NOTE:
-	All above commit is based on linus's kernel tree.
+	All above commits are based on linus's kernel tree.
+
+---
 
 Index: linux-3.0/Documentation/filesystems/Locking
 ===================================================================

@@ -10,11 +10,11 @@ is f24219b4e90cf70ec4a211b17fbabc725a0ddf3c), so we just need rename
 the function. 
 
 NOTE:
-	1) We must review this patch when SLE11SP2's kenrel version is 
-	   higher than f24219b4e90cf70ec4a211b17fbabc725a0ddf3c, because
-	   the function __atomic_add_unless and atomic_add_unless have 
-	   their own meaning after the commit.
-	2) All above commit is based on linus's kernel tree.
+	1) We must review this patch when the patch (f24219b4e90cf70ec
+	   4a211b17fbabc725a0ddf3c) has be merged, because the function 
+	   __atomic_add_unless and atomic_add_unless have their own 
+	   meaning after the commit.
+	2) All above commits are based on linus's kernel tree.
 
 ---
 

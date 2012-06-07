@@ -5,7 +5,7 @@ is 3c5184ef1216dd476c9c67f22a199d90ac4d5892). There will be fuzz
 when push this patch, so fixed it.
 
 NOTE:
-	All above commit is based on linus's kernel tree.
+	All above commits are based on linus's kernel tree.
 
 From d46cfba5363a163851dc768f717f34185527a472 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
