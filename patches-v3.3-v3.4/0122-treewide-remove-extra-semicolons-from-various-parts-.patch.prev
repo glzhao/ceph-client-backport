@@ -1,0 +1,31 @@
+From 699324871fcc3650f2023c5e36cb119a92d7894b Mon Sep 17 00:00:00 2001
+From: Justin P. Mattock <justinmattock@gmail.com>
+Date: Tue, 26 Jul 2011 23:06:29 -0700
+Subject: [PATCH] treewide: remove extra semicolons from various parts of the kernel
+
+This is a resend from the original, changing the title from PATCH to
+RFC(since this is a review for commit, and I should have put that the first go around).
+and also removing some of the commit's with ia64 and bash since it is significant.
+let me know if I might have missed anything etc..
+
+Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+
+diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
+index 1278098..2c09102 100644
+--- a/drivers/block/rbd.c
++++ b/drivers/block/rbd.c
+@@ -192,7 +192,7 @@ static ssize_t rbd_snap_add(struct device *dev,
+ 			    const char *buf,
+ 			    size_t count);
+ static void __rbd_remove_snap_dev(struct rbd_device *rbd_dev,
+-				  struct rbd_snap *snap);;
++				  struct rbd_snap *snap);
+ 
+ 
+ static struct rbd_device *dev_to_rbd(struct device *dev)
+-- 
+1.7.3.4
+
