@@ -1,0 +1,73 @@
+From 702aeb1f88e707241d76e1e2a1a02dd81e6c2d77 Mon Sep 17 00:00:00 2001
+From: Sage Weil <sage@inktank.com>
+Date: Mon, 14 May 2012 12:34:38 -0700
+Subject: [PATCH 180/199] ceph: fully initialize new layout
+
+When we are setting a new layout, fully initialize the structure:
+ - zero it out
+ - always set preferred_osd to -1
+
+Signed-off-by: Sage Weil <sage@inktank.com>
+Reviewed-by: Alex Elder <elder@inktank.com>
+Signed-off-by: Guangliang Zhao <lucienchao@gmail.com>
+---
+ fs/ceph/ioctl.c |   19 +++++++++++++------
+ fs/ceph/ioctl.h |    2 ++
+ 2 files changed, 15 insertions(+), 6 deletions(-)
+
+diff --git a/fs/ceph/ioctl.c b/fs/ceph/ioctl.c
+index 0e2f021..c0b7314 100644
+--- a/fs/ceph/ioctl.c
++++ b/fs/ceph/ioctl.c
+@@ -80,22 +80,29 @@ static long ceph_ioctl_set_layout(struct file *file, void __user *arg)
+ 
+ 	/* validate changed params against current layout */
+ 	err = ceph_do_getattr(file->f_dentry->d_inode, CEPH_STAT_CAP_LAYOUT);
+-	if (!err) {
+-		nl.stripe_unit = ceph_file_layout_su(ci->i_layout);
+-		nl.stripe_count = ceph_file_layout_stripe_count(ci->i_layout);
+-		nl.object_size = ceph_file_layout_object_size(ci->i_layout);
+-		nl.data_pool = le32_to_cpu(ci->i_layout.fl_pg_pool);
+-	} else
++	if (err)
+ 		return err;
+ 
++	memset(&nl, 0, sizeof(nl));
+ 	if (l.stripe_count)
+ 		nl.stripe_count = l.stripe_count;
++	else
++		nl.stripe_count = ceph_file_layout_stripe_count(ci->i_layout);
+ 	if (l.stripe_unit)
+ 		nl.stripe_unit = l.stripe_unit;
++	else
++		nl.stripe_unit = ceph_file_layout_su(ci->i_layout);
+ 	if (l.object_size)
+ 		nl.object_size = l.object_size;
++	else
++		nl.object_size = ceph_file_layout_object_size(ci->i_layout);
+ 	if (l.data_pool)
+ 		nl.data_pool = l.data_pool;
++	else
++		nl.data_pool = ceph_file_layout_pg_pool(ci->i_layout);
++
++	/* this is obsolete, and always -1 */
++	nl.preferred_osd = le64_to_cpu(-1);
+ 
+ 	err = __validate_layout(mdsc, &nl);
+ 	if (err)
+diff --git a/fs/ceph/ioctl.h b/fs/ceph/ioctl.h
+index be4a604..c77028a 100644
+--- a/fs/ceph/ioctl.h
++++ b/fs/ceph/ioctl.h
+@@ -34,6 +34,8 @@
+ struct ceph_ioctl_layout {
+ 	__u64 stripe_unit, stripe_count, object_size;
+ 	__u64 data_pool;
++
++	/* obsolete.  new values ignored, always return -1 */
+ 	__s64 preferred_osd;
+ };
+ 
+-- 
+1.7.3.4
+
