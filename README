@@ -9,12 +9,19 @@ patches-v3.1-v3.2:
 all ceph-related patches and can be applied from v3.1 to v3.2
 patches-v3.2-v3.3:
 all ceph-related patches and can be applied from v3.2 to v3.3
+patches-v3.3-v3.4:
+all ceph-related patches and can be applied from v3.3 to v3.4
+patches-v3.4-6bd9adb:
+all ceph-related patches and can be applied from v3.4 to 6bd9adb
+
 patches-related-but-not-support:
 ceph-related patches but not support, because the patches will 
 modify other modules, such as btrfs, ext4, etc.
 patches-can-not-patch-origin:
 ceph-related patches, can't be applied and must be fixed. These 
 are origin version
+all-patches:
+list all patches
 patch-list:
 the content of all directorys
 note:
