@@ -1,3 +1,12 @@
+ceph-backport: ceph: always initialize the dentry in open_root_dentry()
+
+This patch conflicts with patch(ceph: d_alloc_root() may fail, commit 
+is 3c5184ef1216dd476c9c67f22a199d90ac4d5892). There will be fuzz 
+when push this patch, so fixed it.
+
+NOTE:
+	All above commit is based on linus's kernel tree.
+
 From d46cfba5363a163851dc768f717f34185527a472 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 4 Jan 2012 16:30:15 -0600
