@@ -1,7 +1,7 @@
 From 795858dbd253462a67e14272edeaae73c6074b17 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Mon, 15 Aug 2011 13:02:37 -0700
-Subject: [PATCH] ceph: fix encoding of ino only (not relative) paths
+Subject: [PATCH 27/201] ceph: fix encoding of ino only (not relative) paths
 
 A 'path' consists of a starting ino and relative component.  Encode even
 when there is no relative component.  This is primarily needed by the

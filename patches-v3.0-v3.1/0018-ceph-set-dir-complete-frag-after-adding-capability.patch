@@ -1,7 +1,7 @@
 From dfabbed6fdd509dc2beb89c954bc36014a1bc7cb Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:30:02 -0700
-Subject: [PATCH 18/25] ceph: set dir complete frag after adding capability
+Subject: [PATCH 18/201] ceph: set dir complete frag after adding capability
 
 Curretly ceph_add_cap clears the complete bit if we are newly issued the
 FILE_SHARED cap, which is normally the case for a newly issue cap on a new

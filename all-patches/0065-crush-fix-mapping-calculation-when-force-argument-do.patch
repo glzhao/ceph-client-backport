@@ -1,7 +1,7 @@
 From f1932fc1a6d899c754676b1dd8b17de93b052d43 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Wed, 7 Dec 2011 09:10:26 -0800
-Subject: [PATCH 65/67] crush: fix mapping calculation when force argument doesn't exist
+Subject: [PATCH 65/201] crush: fix mapping calculation when force argument doesn't exist
 
 If the force argument isn't valid, we should continue calculating a
 mapping as if it weren't specified.

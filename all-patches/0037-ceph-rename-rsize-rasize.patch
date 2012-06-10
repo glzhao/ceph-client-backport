@@ -1,7 +1,7 @@
 From 83817e35cbd9b36db955a22418c9e30324353587 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Thu, 4 Aug 2011 08:03:44 -0700
-Subject: [PATCH 37/51] ceph: rename rsize -> rasize
+Subject: [PATCH 37/201] ceph: rename rsize -> rasize
 
 It controls readahead.
 

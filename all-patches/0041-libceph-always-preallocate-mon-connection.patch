@@ -1,7 +1,7 @@
 From f6a2f5be07463ef532b9f4e3cb9e42ab9df85832 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 9 Aug 2011 09:27:44 -0700
-Subject: [PATCH 41/51] libceph: always preallocate mon connection
+Subject: [PATCH 41/201] libceph: always preallocate mon connection
 
 Allocate the mon connection on init.  We already reuse it across
 reconnects.  Remove now unnecessary (and incomplete) NULL checks.

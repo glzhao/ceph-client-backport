@@ -1,7 +1,7 @@
 From 83eaea22bdfc9e1cec88f81be5b64f30f6c37e8b Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Wed, 24 Aug 2011 14:07:01 -0700
-Subject: [PATCH 45/51] Revert "ceph: don't truncate dirty pages in invalidate work thread"
+Subject: [PATCH 45/201] Revert "ceph: don't truncate dirty pages in invalidate work thread"
 
 This reverts commit c9af9fb68e01eb2c2165e1bc45cfeeed510c64e6.
 

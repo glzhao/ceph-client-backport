@@ -1,7 +1,7 @@
 From a35eca958aa1c7d0b5f993db1a3ded45ae16d59b Mon Sep 17 00:00:00 2001
 From: Greg Farnum <gregory.farnum@dreamhost.com>
 Date: Thu, 25 Aug 2011 12:43:06 -0700
-Subject: [PATCH 46/51] ceph: let the set_layout ioctl set single traits
+Subject: [PATCH 46/201] ceph: let the set_layout ioctl set single traits
 
 Previously we were validating the passed-in stripe unit, object size,
 and stripe count against each other (and not testing most other stuff).

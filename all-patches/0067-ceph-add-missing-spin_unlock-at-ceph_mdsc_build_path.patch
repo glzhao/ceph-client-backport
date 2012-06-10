@@ -1,7 +1,7 @@
 From 9d5a09e659f8414dd3713e2acbfaf8a9e9794aa1 Mon Sep 17 00:00:00 2001
 From: Yehuda Sadeh <yehuda@hq.newdream.net>
 Date: Tue, 13 Dec 2011 09:57:44 -0800
-Subject: [PATCH 67/67] ceph: add missing spin_unlock at ceph_mdsc_build_path()
+Subject: [PATCH 67/201] ceph: add missing spin_unlock at ceph_mdsc_build_path()
 
 one of the paths was missing spin_unlock
 

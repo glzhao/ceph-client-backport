@@ -1,7 +1,7 @@
 From a725f65e52de73defb3c7033c471c48c56ca6cdd Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 2 Feb 2012 08:13:30 -0600
-Subject: [PATCH 126/154] rbd: encapsulate argument parsing for rbd_add()
+Subject: [PATCH 127/201] rbd: encapsulate argument parsing for rbd_add()
 
 Move the code that parses the arguments provided to rbd_add() (which
 are supplied via /sys/bus/rbd/add) into a separate function.

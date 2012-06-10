@@ -1,7 +1,7 @@
 From af0ed569d7019f1b49e9e51e77b47092e656b00e Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:26:31 -0700
-Subject: [PATCH 06/25] ceph: fix snap writeback when racing with writes
+Subject: [PATCH 6/201] ceph: fix snap writeback when racing with writes
 
 There are two problems that come up when we try to queue a capsnap while a
 write is in progress:

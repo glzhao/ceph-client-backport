@@ -1,7 +1,7 @@
 From ab434b60ab07f8c44246b6fb0cddee436687a09a Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Fri, 13 Jan 2012 22:22:03 -0800
-Subject: [PATCH 85/88] ceph: initialize client debugfs outside of monc->mutex
+Subject: [PATCH 85/201] ceph: initialize client debugfs outside of monc->mutex
 
 Initializing debufs under monc->mutex introduces a lock dependency for
 sb->s_type->i_mutex_key, which (combined with several other dependencies)

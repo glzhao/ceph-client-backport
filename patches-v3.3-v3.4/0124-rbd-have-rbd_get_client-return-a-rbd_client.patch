@@ -1,7 +1,7 @@
 From d720bcb0a8f246eb441ba9d4f341bc16746556c6 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 2 Feb 2012 08:13:30 -0600
-Subject: [PATCH 123/154] rbd: have rbd_get_client() return a rbd_client
+Subject: [PATCH 124/201] rbd: have rbd_get_client() return a rbd_client
 
 Since rbd_get_client() currently returns an error code.  It assigns
 the rbd_client field of the rbd_device structure it is passed if

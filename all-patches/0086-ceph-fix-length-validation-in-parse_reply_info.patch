@@ -1,7 +1,7 @@
 From 32852a81bccd9e3d1953b894966393d1b546576d Mon Sep 17 00:00:00 2001
 From: Xi Wang <xi.wang@gmail.com>
 Date: Sat, 14 Jan 2012 22:20:59 -0500
-Subject: [PATCH 86/88] ceph: fix length validation in parse_reply_info()
+Subject: [PATCH 86/201] ceph: fix length validation in parse_reply_info()
 
 "len" is read from network and thus needs validation.  Otherwise, given
 a bogus "len" value, p+len could be an out-of-bounds pointer, which is

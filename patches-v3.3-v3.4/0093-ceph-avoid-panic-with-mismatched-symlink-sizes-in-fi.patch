@@ -1,7 +1,7 @@
 From 810339ec2fae5cbd0164b8acde7fb65652755864 Mon Sep 17 00:00:00 2001
 From: Xi Wang <xi.wang@gmail.com>
 Date: Fri, 3 Feb 2012 09:55:36 -0500
-Subject: [PATCH 093/154] ceph: avoid panic with mismatched symlink sizes in fill_inode()
+Subject: [PATCH 93/201] ceph: avoid panic with mismatched symlink sizes in fill_inode()
 
 Return -EINVAL rather than panic if iinfo->symlink_len and inode->i_size
 do not match.

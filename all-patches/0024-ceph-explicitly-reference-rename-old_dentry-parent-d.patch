@@ -1,7 +1,7 @@
 From 41b02e1f9bb87b07d792b64aaeb7af3d00d69cd2 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:31:14 -0700
-Subject: [PATCH 24/25] ceph: explicitly reference rename old_dentry parent dir in request
+Subject: [PATCH 24/201] ceph: explicitly reference rename old_dentry parent dir in request
 
 We carry a pin on the parent directory for the rename source and dest
 dentries.  For the source it's r_locked_dir; we need to explicitly

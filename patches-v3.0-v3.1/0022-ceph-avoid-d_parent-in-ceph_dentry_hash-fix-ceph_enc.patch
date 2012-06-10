@@ -1,7 +1,7 @@
 From e5f86dc377e7ff2b4195831153a85a3e76fefff2 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:30:55 -0700
-Subject: [PATCH 22/25] ceph: avoid d_parent in ceph_dentry_hash; fix ceph_encode_fh() hashing bug
+Subject: [PATCH 22/201] ceph: avoid d_parent in ceph_dentry_hash; fix ceph_encode_fh() hashing bug
 
 Have caller pass in a safely-obtained reference to the parent directory
 for calculating a dentry's hash valud.

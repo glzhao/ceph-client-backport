@@ -1,7 +1,7 @@
 From 99f0f3b2c4be15784bb4ede33b5f2c3f7861dba7 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:27 -0600
-Subject: [PATCH 100/154] ceph: eliminate some abusive casts
+Subject: [PATCH 100/201] ceph: eliminate some abusive casts
 
 This fixes some spots where a type cast to (void *) was used as
 as a universal type hiding mechanism.  Instead, properly cast the

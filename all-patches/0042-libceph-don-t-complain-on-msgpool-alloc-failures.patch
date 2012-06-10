@@ -1,7 +1,7 @@
 From b61c27636fffbaf1980e675282777b9467254a40 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 9 Aug 2011 15:03:46 -0700
-Subject: [PATCH 42/51] libceph: don't complain on msgpool alloc failures
+Subject: [PATCH 42/201] libceph: don't complain on msgpool alloc failures
 
 The pool allocation failures are masked by the pool; there is no need to
 spam the console about them.  (That's the whole point of having the pool

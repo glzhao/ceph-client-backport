@@ -1,7 +1,7 @@
 From cc9d734c3d1b39c6a557673469aea26364060226 Mon Sep 17 00:00:00 2001
 From: Josh Durgin <josh.durgin@dreamhost.com>
 Date: Mon, 21 Nov 2011 18:19:13 -0800
-Subject: [PATCH 112/154] rbd: use a single value of snap_name to mean no snap
+Subject: [PATCH 112/201] rbd: use a single value of snap_name to mean no snap
 
 There's already a constant for this anyway.
 

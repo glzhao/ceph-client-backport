@@ -1,7 +1,7 @@
 From d329156f16306449c273002486c28de3ddddfd89 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:38 -0500
-Subject: [PATCH 182/199] libceph: don't reset kvec in prepare_write_banner()
+Subject: [PATCH 183/201] libceph: don't reset kvec in prepare_write_banner()
 
 Move the kvec reset for a connection out of prepare_write_banner and
 into its only caller.

@@ -1,7 +1,7 @@
 From 2151937d7ce491bfbe269a1ae742c6686904474c Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Thu, 1 Dec 2011 08:06:52 -0800
-Subject: [PATCH 61/64] ceph: fix rasize reporting by ceph_show_options
+Subject: [PATCH 61/201] ceph: fix rasize reporting by ceph_show_options
 
 Fix typo.
 

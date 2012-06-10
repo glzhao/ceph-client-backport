@@ -1,7 +1,7 @@
 From 6173d1f02fb19c0fba02857ae4e1109b5ec95034 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 14 Feb 2012 14:05:33 -0600
-Subject: [PATCH 138/154] libceph: encapsulate some messenger cleanup code
+Subject: [PATCH 139/201] libceph: encapsulate some messenger cleanup code
 
 Define a helper function to perform various cleanup operations.  Use
 it both in the exit routine and in the init routine in the event of

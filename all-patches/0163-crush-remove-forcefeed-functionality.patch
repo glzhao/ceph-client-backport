@@ -1,7 +1,7 @@
 From 41ebcc0907c58f75d0b25afcaf8b9c35c6b1ad14 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 7 May 2012 15:39:29 -0700
-Subject: [PATCH 162/199] crush: remove forcefeed functionality
+Subject: [PATCH 163/201] crush: remove forcefeed functionality
 
 Remove forcefeed functionality from CRUSH.  This is an ugly misfeature that
 is mostly useless and unused.  Remove it.

@@ -1,7 +1,7 @@
 From 3489b42a72a41d477665ab37f196ae9257180abb Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 8 Mar 2012 16:50:09 -0600
-Subject: [PATCH 153/154] ceph: fix three bugs, two in ceph_vxattrcb_file_layout()
+Subject: [PATCH 154/201] ceph: fix three bugs, two in ceph_vxattrcb_file_layout()
 
 In ceph_vxattrcb_file_layout(), there is a check to determine
 whether a preferred PG should be formatted into the output buffer.

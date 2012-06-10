@@ -1,7 +1,7 @@
 From e124a82f3c4efc2cc2bae68a2bf30020fb8c4fc2 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Sun, 29 Jan 2012 13:57:44 -0600
-Subject: [PATCH 115/154] rbd: protect the rbd_dev_list with a spinlock
+Subject: [PATCH 115/201] rbd: protect the rbd_dev_list with a spinlock
 
 The rbd_dev_list is just a simple list of all the current
 rbd_devices.  Using the ctl_mutex as a concurrency guard is

@@ -1,7 +1,7 @@
 From 8f43fb53894079bf0caab6e348ceaffe7adc651a Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:39 -0500
-Subject: [PATCH 194/199] ceph: use info returned by get_authorizer
+Subject: [PATCH 195/201] ceph: use info returned by get_authorizer
 
 Rather than passing a bunch of arguments to be filled in with the
 content of the ceph_auth_handshake buffer now returned by the

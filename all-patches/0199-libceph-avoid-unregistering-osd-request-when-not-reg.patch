@@ -1,7 +1,7 @@
 From 35f9f8a09e1e88e31bd34a1e645ca0e5f070dd5c Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Wed, 16 May 2012 15:16:38 -0500
-Subject: [PATCH 198/199] libceph: avoid unregistering osd request when not registered
+Subject: [PATCH 199/201] libceph: avoid unregistering osd request when not registered
 
 There is a race between two __unregister_request() callers: the
 reply path and the ceph_osdc_wait_request().  If we get a reply

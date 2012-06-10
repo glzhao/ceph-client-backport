@@ -1,7 +1,7 @@
 From f0ed1b7cef1e801ef470efc501f9c663fe10cebd Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 9 Aug 2011 15:05:07 -0700
-Subject: [PATCH 43/51] libceph: warn on msg allocation failures
+Subject: [PATCH 43/201] libceph: warn on msg allocation failures
 
 Any non-masked msg allocation failure should generate a warning and stack
 trace to the console.  All of these need to eventually be replaced by

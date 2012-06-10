@@ -1,7 +1,7 @@
 From 8b12d47b80c7a34dffdd98244d99316db490ec58 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 7 May 2012 15:38:35 -0700
-Subject: [PATCH 158/199] crush: clean up types, const-ness
+Subject: [PATCH 159/201] crush: clean up types, const-ness
 
 Move various types from int -> __u32 (or similar), and add const as
 appropriate.

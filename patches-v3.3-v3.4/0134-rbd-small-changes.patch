@@ -1,7 +1,7 @@
 From 593a9e7b34fa62d703b473ae923a9681556cdf74 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 7 Feb 2012 12:03:37 -0600
-Subject: [PATCH 133/154] rbd: small changes
+Subject: [PATCH 134/201] rbd: small changes
 
 Here is another set of small code tidy-ups:
     - Define SECTOR_SHIFT and SECTOR_SIZE, and use these symbolic

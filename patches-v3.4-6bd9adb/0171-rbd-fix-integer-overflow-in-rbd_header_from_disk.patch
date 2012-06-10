@@ -1,7 +1,7 @@
 From 50f7c4c967d0b5acd8e7ba6ab654dc4a7ac869ac Mon Sep 17 00:00:00 2001
 From: Xi Wang <xi.wang@gmail.com>
 Date: Fri, 20 Apr 2012 15:49:44 -0500
-Subject: [PATCH 170/199] rbd: fix integer overflow in rbd_header_from_disk()
+Subject: [PATCH 171/201] rbd: fix integer overflow in rbd_header_from_disk()
 
 ondisk->snap_count is read from disk via rbd_req_sync_read() and thus
 needs validation.  Otherwise, a bogus `snap_count' could overflow the

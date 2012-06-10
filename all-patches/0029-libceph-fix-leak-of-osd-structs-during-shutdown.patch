@@ -1,7 +1,7 @@
 From aca420bc51f48b0701963ba3a6234442a0cabebd Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Wed, 31 Aug 2011 14:45:53 -0700
-Subject: [PATCH] libceph: fix leak of osd structs during shutdown
+Subject: [PATCH 29/201] libceph: fix leak of osd structs during shutdown
 
 We want to remove all OSDs, not just those on the idle LRU.
 

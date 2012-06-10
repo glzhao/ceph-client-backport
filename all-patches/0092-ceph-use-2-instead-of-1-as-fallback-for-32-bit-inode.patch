@@ -1,7 +1,7 @@
 From a661fc561190c0ee2d7cfabcfa92204e2b3aa349 Mon Sep 17 00:00:00 2001
 From: Amon Ott <ao@m-privacy.de>
 Date: Mon, 23 Jan 2012 09:25:23 -0800
-Subject: [PATCH 092/154] ceph: use 2 instead of 1 as fallback for 32-bit inode number
+Subject: [PATCH 92/201] ceph: use 2 instead of 1 as fallback for 32-bit inode number
 
 The root directory of the Ceph mount has inode number 1, so falling back
 to 1 always creates a collision. 2 is unused on my test systems and seems

@@ -1,7 +1,7 @@
 From 00f1f36ffa29a6b8e0529770bce2a44585ab3af0 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 7 Feb 2012 12:03:36 -0600
-Subject: [PATCH 132/154] rbd: do some refactoring
+Subject: [PATCH 133/201] rbd: do some refactoring
 
 A few blocks of code are rearranged a bit here:
     - In rbd_header_from_disk():

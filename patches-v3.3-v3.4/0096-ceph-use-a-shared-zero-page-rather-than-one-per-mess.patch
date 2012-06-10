@@ -1,7 +1,7 @@
 From 5766651971e81298732466c9aa462ff47898ba37 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:27 -0600
-Subject: [PATCH 096/154] ceph: use a shared zero page rather than one per messenger
+Subject: [PATCH 96/201] ceph: use a shared zero page rather than one per messenger
 
 Each messenger allocates a page to be used when writing zeroes
 out in the event of error or other abnormal condition.  Instead,

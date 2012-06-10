@@ -1,7 +1,7 @@
 From 60571c7d556b10db7e555bd4b6765647af5c41e8 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 2 Feb 2012 08:13:30 -0600
-Subject: [PATCH 124/154] rbd: reduce memory used for rbd_dev fields
+Subject: [PATCH 125/201] rbd: reduce memory used for rbd_dev fields
 
 The length of the string containing the monitor address
 specification(s) will never exceed the length of the string passed

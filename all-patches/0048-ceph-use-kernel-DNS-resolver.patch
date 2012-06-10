@@ -1,7 +1,7 @@
 From ee3b56f265cafb28c9a1b58faed4f1dbdf51af86 Mon Sep 17 00:00:00 2001
 From: Noah Watkins <noahwatkins@gmail.com>
 Date: Fri, 23 Sep 2011 11:48:42 -0700
-Subject: [PATCH 48/51] ceph: use kernel DNS resolver
+Subject: [PATCH 48/201] ceph: use kernel DNS resolver
 
 Change ceph_parse_ips to take either names given as
 IP addresses or standard hostnames (e.g. localhost).

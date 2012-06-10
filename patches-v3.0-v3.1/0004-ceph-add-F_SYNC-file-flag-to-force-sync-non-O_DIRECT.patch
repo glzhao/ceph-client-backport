@@ -1,7 +1,7 @@
 From 4918b6d140c4822201ebbe2f070875332aff337b Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:26:07 -0700
-Subject: [PATCH 04/25] ceph: add F_SYNC file flag to force sync (non-O_DIRECT) io
+Subject: [PATCH 4/201] ceph: add F_SYNC file flag to force sync (non-O_DIRECT) io
 
 This allows us to force IO through the sync path which you normally only
 get when multiple clients are reading/writing to the same file or by

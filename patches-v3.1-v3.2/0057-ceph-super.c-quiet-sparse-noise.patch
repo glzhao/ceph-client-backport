@@ -1,7 +1,7 @@
 From 0c6d4b4e22a513f8563a2e00c5ab08e9f8796272 Mon Sep 17 00:00:00 2001
 From: H Hartley Sweeten <hartleys@visionengravers.com>
 Date: Fri, 23 Sep 2011 11:53:30 -0700
-Subject: [PATCH 58/58] ceph/super.c: quiet sparse noise
+Subject: [PATCH 57/201] ceph/super.c: quiet sparse noise
 
 Quiet the sparse noise:
 

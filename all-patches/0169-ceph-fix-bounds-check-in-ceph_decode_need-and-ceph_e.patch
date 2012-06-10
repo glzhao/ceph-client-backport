@@ -1,7 +1,7 @@
 From 76aa542fb90e3e91edb1146d10ca7cf2cae8e7e9 Mon Sep 17 00:00:00 2001
 From: Xi Wang <xi.wang@gmail.com>
 Date: Fri, 20 Apr 2012 15:49:44 -0500
-Subject: [PATCH 168/199] ceph: fix bounds check in ceph_decode_need and ceph_encode_need
+Subject: [PATCH 169/201] ceph: fix bounds check in ceph_decode_need and ceph_encode_need
 
 Given a large n, the bounds check (*p + n > end) can be bypassed due to
 pointer wraparound.  A safer check is (n > end - *p).

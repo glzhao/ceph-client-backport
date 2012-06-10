@@ -1,7 +1,7 @@
 From 97bb59a03dd6767fcc00be09b0c6d9e5294eeea6 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 24 Jan 2012 10:08:36 -0600
-Subject: [PATCH 88/88] rbd: fix a memory leak in rbd_get_client()
+Subject: [PATCH 88/201] rbd: fix a memory leak in rbd_get_client()
 
 If an existing rbd client is found to be suitable for use in
 rbd_get_client(), the rbd_options structure is not being

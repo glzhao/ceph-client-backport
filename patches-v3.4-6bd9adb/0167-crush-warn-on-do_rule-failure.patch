@@ -1,7 +1,7 @@
 From 8b393269008411a612ca549b733b4296e819f2fb Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 7 May 2012 15:37:23 -0700
-Subject: [PATCH 166/199] crush: warn on do_rule failure
+Subject: [PATCH 167/201] crush: warn on do_rule failure
 
 If we get an error code from crush_do_rule(), print an error to the
 console.

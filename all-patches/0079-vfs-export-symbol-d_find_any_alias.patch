@@ -1,7 +1,7 @@
 From 46f72b349290d2bd7aecea38f02609d814332df6 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 10 Jan 2012 09:04:37 -0800
-Subject: [PATCH 87/90] vfs: export symbol d_find_any_alias()
+Subject: [PATCH 79/201] vfs: export symbol d_find_any_alias()
 
 Ceph needs this.
 

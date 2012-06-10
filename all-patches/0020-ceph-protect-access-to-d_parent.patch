@@ -1,7 +1,7 @@
 From 5f21c96dd5c615341963036ae8f5e4f5227a818d Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:30:29 -0700
-Subject: [PATCH 20/25] ceph: protect access to d_parent
+Subject: [PATCH 20/201] ceph: protect access to d_parent
 
 d_parent is protected by d_lock: use it when looking up a dentry's parent
 directory inode.  Also take a reference and drop it in the caller to avoid

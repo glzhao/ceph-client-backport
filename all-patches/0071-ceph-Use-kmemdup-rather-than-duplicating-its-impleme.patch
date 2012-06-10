@@ -1,7 +1,7 @@
 From 186482560f660b8dbf77ee43aa6489cb45d342cd Mon Sep 17 00:00:00 2001
 From: Thomas Meyer <thomas@m3y3r.de>
 Date: Thu, 10 Nov 2011 19:45:21 +0100
-Subject: [PATCH] ceph: Use kmemdup rather than duplicating its implementation
+Subject: [PATCH 71/201] ceph: Use kmemdup rather than duplicating its implementation
 
 Use kmemdup rather than duplicating its implementation
 

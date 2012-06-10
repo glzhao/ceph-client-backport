@@ -1,7 +1,7 @@
 From 8f04d42276048b3baff5a5d8fa769f433c62b63e Mon Sep 17 00:00:00 2001
 From: Greg Farnum <gregory.farnum@dreamhost.com>
 Date: Tue, 26 Jul 2011 11:26:54 -0700
-Subject: [PATCH 08/25] ceph: report f_bfree based on kb_avail rather than diffing.
+Subject: [PATCH 8/201] ceph: report f_bfree based on kb_avail rather than diffing.
 
 Reviewed-by: Yehuda Sadeh <yehuda@hq.newdream.net>
 Signed-off-by: Greg Farnum <gregory.farnum@dreamhost.com>

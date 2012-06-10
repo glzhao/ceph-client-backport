@@ -1,7 +1,7 @@
 From 859eb7994876f26fd9f52d9589fbcab8e2fe8069 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 14 Feb 2012 14:05:33 -0600
-Subject: [PATCH 136/154] libceph: encapsulate connection kvec operations
+Subject: [PATCH 137/201] libceph: encapsulate connection kvec operations
 
 Encapsulate the operation of adding a new chunk of data to the next
 open slot in a ceph_connection's out_kvec array.  Also add a "reset"

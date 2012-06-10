@@ -1,7 +1,7 @@
 From 80834312a4da1405a9bc788313c67643de6fcb4c Mon Sep 17 00:00:00 2001
 From: Xi Wang <xi.wang@gmail.com>
 Date: Thu, 16 Feb 2012 11:56:29 -0500
-Subject: [PATCH 095/154] ceph: fix overflow check in build_snap_context()
+Subject: [PATCH 95/201] ceph: fix overflow check in build_snap_context()
 
 The overflow check for a + n * b should be (n > (ULONG_MAX - a) / b),
 rather than (n > ULONG_MAX / b - a).

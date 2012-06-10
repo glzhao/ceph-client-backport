@@ -1,7 +1,7 @@
 From 9bd1966344bf975b5ce65e80fd6bacc41b4325a8 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 7 Mar 2012 11:40:08 -0600
-Subject: [PATCH 151/154] libceph: rename "page_shift" variable to something sensible
+Subject: [PATCH 152/201] libceph: rename "page_shift" variable to something sensible
 
 In write_partial_msg_pages() there is a local variable used to
 track the starting offset within a bio segment to use.  Its name,

@@ -1,7 +1,7 @@
 From 182fac2689b769a96e7fc9defcd560c5cca92b1e Mon Sep 17 00:00:00 2001
 From: Jim Schutt <jaschut@sandia.gov>
 Date: Wed, 29 Feb 2012 08:30:58 -0700
-Subject: [PATCH 090/154] net/ceph: Only clear SOCK_NOSPACE when there is sufficient space in the socket buffer
+Subject: [PATCH 90/201] net/ceph: Only clear SOCK_NOSPACE when there is sufficient space in the socket buffer
 
 The Ceph messenger would sometimes queue multiple work items to write
 data to a socket when the socket buffer was full.

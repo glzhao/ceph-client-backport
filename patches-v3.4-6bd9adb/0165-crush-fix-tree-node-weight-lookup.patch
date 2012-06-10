@@ -1,7 +1,7 @@
 From f671d4cd9b36691ac4ef42cde44c1b7a84e13631 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 7 May 2012 15:36:49 -0700
-Subject: [PATCH 164/199] crush: fix tree node weight lookup
+Subject: [PATCH 165/201] crush: fix tree node weight lookup
 
 Fix the node weight lookup for tree buckets by using a correct accessor.
 

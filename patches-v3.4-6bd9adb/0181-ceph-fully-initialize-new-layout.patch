@@ -1,7 +1,7 @@
 From 702aeb1f88e707241d76e1e2a1a02dd81e6c2d77 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 14 May 2012 12:34:38 -0700
-Subject: [PATCH 180/199] ceph: fully initialize new layout
+Subject: [PATCH 181/201] ceph: fully initialize new layout
 
 When we are setting a new layout, fully initialize the structure:
  - zero it out

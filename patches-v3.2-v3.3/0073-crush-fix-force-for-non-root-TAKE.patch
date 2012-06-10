@@ -1,7 +1,7 @@
 From e11b05d31f21f0ea39ea288af667887cd6c21c80 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Mon, 12 Dec 2011 09:35:22 -0800
-Subject: [PATCH 73/77] crush: fix force for non-root TAKE
+Subject: [PATCH 73/201] crush: fix force for non-root TAKE
 
 Signed-off-by: Sage Weil <sage@newdream.net>
 Signed-off-by: Guangliang Zhao <gzhao@suse.com>

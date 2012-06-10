@@ -1,7 +1,7 @@
 From 3c5184ef1216dd476c9c67f22a199d90ac4d5892 Mon Sep 17 00:00:00 2001
 From: Al Viro <viro@zeniv.linux.org.uk>
 Date: Mon, 9 Jan 2012 16:34:32 -0500
-Subject: [PATCH] ceph: d_alloc_root() may fail
+Subject: [PATCH 70/201] ceph: d_alloc_root() may fail
 
 ... and ceph_init_dentry(NULL) will oops
 

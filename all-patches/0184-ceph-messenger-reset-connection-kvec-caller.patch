@@ -1,7 +1,7 @@
 From 84fb3adf6413862cff51d8af3fce5f0b655586a2 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:38 -0500
-Subject: [PATCH 183/199] ceph: messenger: reset connection kvec caller
+Subject: [PATCH 184/201] ceph: messenger: reset connection kvec caller
 
 Reset a connection's kvec fields in the caller rather than in
 prepare_write_connect().   This ends up repeating a few lines of

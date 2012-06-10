@@ -1,7 +1,7 @@
 From 252c6728de604d6a897d85e212996811d5c8c46c Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:25:27 -0700
-Subject: [PATCH 03/25] ceph: add flags field to file_info
+Subject: [PATCH 3/201] ceph: add flags field to file_info
 
 Reviewed-by: Yehuda Sadeh <yehuda@hq.newdream.net>
 Signed-off-by: Sage Weil <sage@newdream.net>

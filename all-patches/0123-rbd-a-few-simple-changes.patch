@@ -1,7 +1,7 @@
 From f0f8cef5a30504eaeba5588a9115b46c824d91a3 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Sun, 29 Jan 2012 13:57:44 -0600
-Subject: [PATCH 122/154] rbd: a few simple changes
+Subject: [PATCH 123/201] rbd: a few simple changes
 
 Here are a few very simple cleanups:
     - Add a "RBD_" prefix to the two driver name string definitions.

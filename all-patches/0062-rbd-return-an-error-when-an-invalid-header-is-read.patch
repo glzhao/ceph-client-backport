@@ -1,7 +1,7 @@
 From 81e759fbf7715514c32e563789db1d9d47fd55fb Mon Sep 17 00:00:00 2001
 From: Josh Durgin <josh.durgin@dreamhost.com>
 Date: Tue, 15 Nov 2011 14:49:53 -0800
-Subject: [PATCH 62/64] rbd: return an error when an invalid header is read
+Subject: [PATCH 62/201] rbd: return an error when an invalid header is read
 
 This protects against opening future rbd images that have incompatible format changes.
 

@@ -1,7 +1,7 @@
 From 6eb43f4b5a2a74599b4ff17a97c03a342327ca65 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 7 May 2012 15:37:05 -0700
-Subject: [PATCH 165/199] crush: fix memory leak when destroying tree buckets
+Subject: [PATCH 166/201] crush: fix memory leak when destroying tree buckets
 
 Reflects ceph.git commit 46d63d98434b3bc9dad2fc9ab23cbaedc3bcb0e4.
 

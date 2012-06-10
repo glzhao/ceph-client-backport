@@ -1,7 +1,7 @@
 From a3530df33eb91d787d08c7383a0a9982690e42d0 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:39 -0500
-Subject: [PATCH 193/199] ceph: have get_authorizer methods return pointers
+Subject: [PATCH 194/201] ceph: have get_authorizer methods return pointers
 
 Have the get_authorizer auth_client method return a ceph_auth
 pointer rather than an integer, pointer-encoding any returned

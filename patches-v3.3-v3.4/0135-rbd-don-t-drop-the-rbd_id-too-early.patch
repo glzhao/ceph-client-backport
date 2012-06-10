@@ -1,7 +1,7 @@
 From 32eec68d2f233e8a6ae1cd326022f6862e2b9ce3 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 8 Feb 2012 16:11:14 -0600
-Subject: [PATCH 134/154] rbd: don't drop the rbd_id too early
+Subject: [PATCH 135/201] rbd: don't drop the rbd_id too early
 
 Currently an rbd device's id is released when it is removed, but it
 is done before the code is run to clean up sysfs-related files (such

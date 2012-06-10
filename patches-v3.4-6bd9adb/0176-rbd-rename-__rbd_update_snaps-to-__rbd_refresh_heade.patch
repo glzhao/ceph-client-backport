@@ -1,7 +1,7 @@
 From 263c6ca007a6693fb724a24c5a55716c49d33573 Mon Sep 17 00:00:00 2001
 From: Josh Durgin <josh.durgin@dreamhost.com>
 Date: Mon, 5 Dec 2011 10:43:42 -0800
-Subject: [PATCH 175/199] rbd: rename __rbd_update_snaps to __rbd_refresh_header
+Subject: [PATCH 176/201] rbd: rename __rbd_update_snaps to __rbd_refresh_header
 
 This function rereads the entire header and handles any changes in
 it, not just changes in snapshots.

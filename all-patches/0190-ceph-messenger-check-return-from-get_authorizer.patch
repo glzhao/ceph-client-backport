@@ -1,7 +1,7 @@
 From ed96af646011412c2bf1ffe860db170db355fae5 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:38 -0500
-Subject: [PATCH 189/199] ceph: messenger: check return from get_authorizer
+Subject: [PATCH 190/201] ceph: messenger: check return from get_authorizer
 
 In prepare_connect_authorizer(), a connection's get_authorizer
 method is called but ignores its return value.  This function can

@@ -1,7 +1,7 @@
 From f42299e6c3883c69c14079b8c88fe33815b2dcc3 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 15 Feb 2012 07:43:54 -0600
-Subject: [PATCH 145/154] libceph: small refactor in write_partial_kvec()
+Subject: [PATCH 146/201] libceph: small refactor in write_partial_kvec()
 
 Make a small change in the code that counts down kvecs consumed by
 a ceph_tcp_sendmsg() call.  Same functionality, just blocked out

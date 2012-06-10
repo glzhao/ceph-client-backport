@@ -1,7 +1,7 @@
 From 554a8b9f54cd7ca2b89f5dc227df08be082fae0d Mon Sep 17 00:00:00 2001
 From: Al Viro <viro@zeniv.linux.org.uk>
 Date: Thu, 23 Jun 2011 12:35:50 -0400
-Subject: [PATCH] Don't pass nameidata when calling vfs_create() from mknod()
+Subject: [PATCH 1/201] Don't pass nameidata when calling vfs_create() from mknod()
 
 All instances can cope with that now (and ceph one actually
 starts working properly).

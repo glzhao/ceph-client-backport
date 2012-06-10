@@ -1,7 +1,7 @@
 From 4cf9d544631c92809cb94ea680c71df56e9437aa Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:27:24 -0700
-Subject: [PATCH 09/25] libceph: don't time out osd requests that haven't been received
+Subject: [PATCH 9/201] libceph: don't time out osd requests that haven't been received
 
 Keep track of when an outgoing message is ACKed (i.e., the server fully
 received it and, presumably, queued it for processing).  Time out OSD

@@ -1,7 +1,7 @@
 From 8adc8b3d780363d5df0dd6ace10336e3d7e331a1 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Wed, 28 Sep 2011 10:11:04 -0700
-Subject: [PATCH 37/37] libceph: fix pg_temp mapping update
+Subject: [PATCH 34/201] libceph: fix pg_temp mapping update
 
 The incremental map updates have a record for each pg_temp mapping that is
 to be add/updated (len > 0) or removed (len == 0).  The old code was

@@ -1,7 +1,7 @@
 From e49bf4c51cbe27439c00516d4297193d45dd4097 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 7 May 2012 15:34:35 -0700
-Subject: [PATCH 157/199] ceph: refactor SETLAYOUT and SETDIRLAYOUT ioctl checks into common helper
+Subject: [PATCH 158/201] ceph: refactor SETLAYOUT and SETDIRLAYOUT ioctl checks into common helper
 
 Both of these methods perform similar checks; move that code to a helper
 so that we can ensure the checks are consistent.

@@ -1,7 +1,7 @@
 From 9bae113a085b790de384bf86f09e15b42a65a985 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:27:59 -0700
-Subject: [PATCH 12/25] ceph: only link open operations to directory unsafe list if O_CREAT|O_TRUNC
+Subject: [PATCH 12/201] ceph: only link open operations to directory unsafe list if O_CREAT|O_TRUNC
 
 We only need to put these on the directory unsafe list if they have
 side effects that fsync(2) should flush out.

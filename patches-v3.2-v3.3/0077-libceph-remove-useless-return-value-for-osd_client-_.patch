@@ -1,7 +1,7 @@
 From 56e925b677c5293e5aac73dac09e93b23259f907 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 3 Jan 2012 12:34:34 -0800
-Subject: [PATCH 77/77] libceph: remove useless return value for osd_client __send_request()
+Subject: [PATCH 77/201] libceph: remove useless return value for osd_client __send_request()
 
 Signed-off-by: Sage Weil <sage@newdream.net>
 Signed-off-by: Guangliang Zhao <gzhao@suse.com>

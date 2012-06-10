@@ -1,7 +1,7 @@
 From a127e0af59ab610e8b37ac2dfa4cdb2ec8c8f604 Mon Sep 17 00:00:00 2001
 From: Al Viro <viro@zeniv.linux.org.uk>
 Date: Sat, 25 Jun 2011 21:43:56 -0400
-Subject: [PATCH] ceph: LOOKUP_OPEN is set only when it's the last component
+Subject: [PATCH 2/201] ceph: LOOKUP_OPEN is set only when it's the last component
 
 Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Guangliang Zhao <gzhao@suse.com>

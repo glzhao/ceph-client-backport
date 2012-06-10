@@ -1,7 +1,7 @@
 From 18fa8b3feaac772925263b04b1429d80e2dfd779 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:28 -0600
-Subject: [PATCH 108/154] ceph: make ceph_setxattr() and ceph_removexattr() more alike
+Subject: [PATCH 108/201] ceph: make ceph_setxattr() and ceph_removexattr() more alike
 
 This patch just rearranges a few bits of code to make more
 portions of ceph_setxattr() and ceph_removexattr() identical.

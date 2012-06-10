@@ -1,7 +1,7 @@
 From 3da54776e2c0385c32d143fd497a7f40a88e29dd Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:39 -0500
-Subject: [PATCH 197/199] ceph: add auth buf in prepare_write_connect()
+Subject: [PATCH 198/201] ceph: add auth buf in prepare_write_connect()
 
 Move the addition of the authorizer buffer to a connection's
 out_kvec out of get_connect_authorizer() and into its caller.  This

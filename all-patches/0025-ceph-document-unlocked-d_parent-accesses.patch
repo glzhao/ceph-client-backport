@@ -1,7 +1,7 @@
 From d79698da32b317e96216236f265a9b72b78ae568 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:31:26 -0700
-Subject: [PATCH 25/25] ceph: document unlocked d_parent accesses
+Subject: [PATCH 25/201] ceph: document unlocked d_parent accesses
 
 For the most part we don't care about racing with rename when directing
 MDS requests; either the old or new parent is fine.  Document that, and

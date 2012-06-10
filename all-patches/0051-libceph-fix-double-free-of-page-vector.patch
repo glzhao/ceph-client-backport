@@ -1,7 +1,7 @@
 From 339573406737461cfb17bebabf7ba536a302d841 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Mon, 24 Oct 2011 09:05:47 -0700
-Subject: [PATCH 51/51] libceph: fix double-free of page vector
+Subject: [PATCH 51/201] libceph: fix double-free of page vector
 
 ceph_release_page_vector() kfrees the vector; we shouldn't do it here too.
 

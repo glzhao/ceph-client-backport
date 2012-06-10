@@ -1,7 +1,7 @@
 From 782e182e91e97f529a1edb30fdece9f1bef90ecc Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Wed, 28 Sep 2011 10:08:27 -0700
-Subject: [PATCH 36/37] libceph: fix pg_temp mapping calculation
+Subject: [PATCH 33/201] libceph: fix pg_temp mapping calculation
 
 We need to apply the modulo pg_num calculation before looking up a pgid in
 the pg_temp mapping rbtree.  This fixes pg_temp mappings, and fixes

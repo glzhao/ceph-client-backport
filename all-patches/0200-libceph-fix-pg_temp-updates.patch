@@ -1,7 +1,7 @@
 From 6bd9adbdf9ca6a052b0b7455ac67b925eb38cfad Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 21 May 2012 09:45:23 -0700
-Subject: [PATCH 199/199] libceph: fix pg_temp updates
+Subject: [PATCH 200/201] libceph: fix pg_temp updates
 
 Usually, we are adding pg_temp entries or removing them.  Occasionally they
 update.  In that case, osdmap_apply_incremental() was failing because the

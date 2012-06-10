@@ -1,7 +1,7 @@
 From 3469ac1aa3a2f1e2586a412923c414779a0af854 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 7 May 2012 15:33:36 -0700
-Subject: [PATCH 156/199] ceph: drop support for preferred_osd pgs
+Subject: [PATCH 157/201] ceph: drop support for preferred_osd pgs
 
 This was an ill-conceived feature that has been removed from Ceph.  Do
 this gracefully:

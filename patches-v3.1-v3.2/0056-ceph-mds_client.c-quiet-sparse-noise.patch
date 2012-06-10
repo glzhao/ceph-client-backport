@@ -1,7 +1,7 @@
 From 7fd7d101ff50af55d6d69f4705facc00c324024e Mon Sep 17 00:00:00 2001
 From: H Hartley Sweeten <hartleys@visionengravers.com>
 Date: Fri, 23 Sep 2011 13:22:11 -0700
-Subject: [PATCH 57/58] ceph/mds_client.c: quiet sparse noise
+Subject: [PATCH 56/201] ceph/mds_client.c: quiet sparse noise
 
 Quiet the following sparse noise:
 

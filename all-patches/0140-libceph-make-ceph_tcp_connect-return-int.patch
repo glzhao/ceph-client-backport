@@ -1,7 +1,7 @@
 From 41617d0c9c9832e030667277ddf6b4ffb4ecdc90 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 14 Feb 2012 14:05:33 -0600
-Subject: [PATCH 139/154] libceph: make ceph_tcp_connect() return int
+Subject: [PATCH 140/201] libceph: make ceph_tcp_connect() return int
 
 There is no real need for ceph_tcp_connect() to return the socket
 pointer it creates, since it already assigns it to con->sock, which

@@ -1,7 +1,7 @@
 From a9a0c51af4e7c825c014b40694571456a75ebbc4 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 15 Feb 2012 07:43:54 -0600
-Subject: [PATCH 143/154] libceph: separate CRC calculation from byte swapping
+Subject: [PATCH 144/201] libceph: separate CRC calculation from byte swapping
 
 Calculate CRC in a separate step from rearranging the byte order
 of the result, to improve clarity and readability.

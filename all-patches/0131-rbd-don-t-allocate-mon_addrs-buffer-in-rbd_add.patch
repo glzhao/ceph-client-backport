@@ -1,7 +1,7 @@
 From 7ef3214af220515b8fe223ec92ec017d2e5607a7 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 2 Feb 2012 08:13:30 -0600
-Subject: [PATCH 130/154] rbd: don't allocate mon_addrs buffer in rbd_add()
+Subject: [PATCH 131/201] rbd: don't allocate mon_addrs buffer in rbd_add()
 
 The mon_addrs buffer in rbd_add is used to hold a copy of the
 monitor IP addresses supplied via /sys/bus/rbd/add.  That is

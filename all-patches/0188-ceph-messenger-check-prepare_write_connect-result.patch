@@ -1,7 +1,7 @@
 From 5a0f8fdd8a0ebe320952a388331dc043d7e14ced Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 21:51:59 -0500
-Subject: [PATCH 187/199] ceph: messenger: check prepare_write_connect() result
+Subject: [PATCH 188/201] ceph: messenger: check prepare_write_connect() result
 
 prepare_write_connect() can return an error, but only one of its
 callers checks for it.  All the rest are in functions that already

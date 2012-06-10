@@ -1,7 +1,7 @@
 From b58dc4100b9190f2cb437f1f67ffcb9f9acc4923 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 15 Mar 2011 15:53:40 -0700
-Subject: [PATCH] ceph: clear parent D_COMPLETE flag when on dentry prune
+Subject: [PATCH 54/201] ceph: clear parent D_COMPLETE flag when on dentry prune
 
 When the VFS prunes a dentry from the cache, clear the D_COMPLETE flag
 on the parent dentry.  Do this for the live and snapshotted namespaces. Do

@@ -9,7 +9,7 @@ NOTE:
 From d8fb02abdc39f92a1066313e2b17047876afa8f9 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 12 Jan 2012 17:48:10 -0800
-Subject: [PATCH 87/88] ceph: create a new session lock to avoid lock inversion
+Subject: [PATCH 87/201] ceph: create a new session lock to avoid lock inversion
 
 Lockdep was reporting a possible circular lock dependency in
 dentry_lease_is_valid().  That function needs to sample the

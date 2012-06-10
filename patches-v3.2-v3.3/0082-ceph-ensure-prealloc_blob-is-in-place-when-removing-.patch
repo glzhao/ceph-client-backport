@@ -1,7 +1,7 @@
 From 83eb26af0db71f2dfe551405c55d982288fa6178 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 11 Jan 2012 17:41:01 -0800
-Subject: [PATCH 90/90] ceph: ensure prealloc_blob is in place when removing xattr
+Subject: [PATCH 82/201] ceph: ensure prealloc_blob is in place when removing xattr
 
 In __ceph_build_xattrs_blob(), if a ceph inode's extended attributes
 are marked dirty, all attributes recorded in its rb_tree index are

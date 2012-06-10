@@ -1,7 +1,7 @@
 From 38d6453ca39ecce442628a93e1bb46d70d547512 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Fri, 14 Oct 2011 13:33:55 -0700
-Subject: [PATCH 49/51] libceph: force resend of osd requests if we skip an osdmap
+Subject: [PATCH 49/201] libceph: force resend of osd requests if we skip an osdmap
 
 If we skip over one or more map epochs, we need to resend all osd requests
 because it is possible they remapped to other servers and then back.

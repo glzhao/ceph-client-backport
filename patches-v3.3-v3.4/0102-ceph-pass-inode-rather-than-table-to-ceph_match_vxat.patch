@@ -1,7 +1,7 @@
 From 06476a69d8954f36a15ff5ddbfd47bdfcff22791 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:27 -0600
-Subject: [PATCH 102/154] ceph: pass inode rather than table to ceph_match_vxattr()
+Subject: [PATCH 102/201] ceph: pass inode rather than table to ceph_match_vxattr()
 
 All callers of ceph_match_vxattr() determine what to pass as the
 first argument by calling ceph_inode_vxattrs(inode).  Just do that

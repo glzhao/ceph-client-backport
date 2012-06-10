@@ -1,7 +1,7 @@
 From ee6b1baf67591b6d7ce1a6a07544343433d5ec9e Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 3 Jan 2012 08:20:40 -0800
-Subject: [PATCH 75/77] ceph: avoid useless dget/dput in encode_fh
+Subject: [PATCH 75/201] ceph: avoid useless dget/dput in encode_fh
 
 Nothing we do here sleeps, so just do it under d_lock and avoid the dget/
 dput entirely.

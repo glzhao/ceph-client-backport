@@ -1,7 +1,7 @@
 From c6ffe10015f4e6fba8a915318b319c43aed1836f Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Thu, 3 Nov 2011 09:23:36 -0700
-Subject: [PATCH 56/58] ceph: use new D_COMPLETE dentry flag
+Subject: [PATCH 55/201] ceph: use new D_COMPLETE dentry flag
 
 We used to use a flag on the directory inode to track whether the dcache
 contents for a directory were a complete cached copy.  Switch to a dentry

@@ -1,7 +1,7 @@
 From 729796be9190f57ca40ccca315e8ad34a1eb8fef Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:39 -0500
-Subject: [PATCH 195/199] ceph: return pointer from prepare_connect_authorizer()
+Subject: [PATCH 196/201] ceph: return pointer from prepare_connect_authorizer()
 
 Change prepare_connect_authorizer() so it returns a pointer (or
 pointer-coded error).

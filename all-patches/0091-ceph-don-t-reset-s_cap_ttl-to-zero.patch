@@ -1,7 +1,7 @@
 From 1ce208a6ce030ea6ccd4b13c8cec0a84c0c7a1e9 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 12 Jan 2012 17:48:11 -0800
-Subject: [PATCH 091/154] ceph: don't reset s_cap_ttl to zero
+Subject: [PATCH 91/201] ceph: don't reset s_cap_ttl to zero
 
 Avoid the need to check for a special zero s_cap_ttl value by just
 using (jiffies - 1) as the value assigned to indicate "sometime in

@@ -1,7 +1,7 @@
 From 51703306b3b9ea7c05728040998521e47358147b Mon Sep 17 00:00:00 2001
 From: Josh Durgin <josh.durgin@dreamhost.com>
 Date: Mon, 24 Oct 2011 16:28:27 -0700
-Subject: [PATCH 63/64] rbd: remove buggy rollback functionality
+Subject: [PATCH 63/201] rbd: remove buggy rollback functionality
 
 This doesn't interact with resizing well, since it doesn't set the
 size of the device to the size at the snapshot. It's also an expensive

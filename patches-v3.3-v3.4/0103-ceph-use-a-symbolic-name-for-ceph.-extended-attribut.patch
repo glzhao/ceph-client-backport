@@ -1,7 +1,7 @@
 From 22891907193e005923a14384d82d702f6af4f0cf Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:28 -0600
-Subject: [PATCH 103/154] ceph: use a symbolic name for "ceph." extended attribute namespace
+Subject: [PATCH 103/201] ceph: use a symbolic name for "ceph." extended attribute namespace
 
 Use symbolic constants to define the top-level prefix for "ceph."
 extended attribute names.

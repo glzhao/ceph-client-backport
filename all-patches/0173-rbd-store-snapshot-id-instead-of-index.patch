@@ -1,7 +1,7 @@
 From 77dfe99fe3cb0b2b0545e19e2d57b7a9134ee3c0 Mon Sep 17 00:00:00 2001
 From: Josh Durgin <josh.durgin@dreamhost.com>
 Date: Mon, 21 Nov 2011 13:04:42 -0800
-Subject: [PATCH 172/199] rbd: store snapshot id instead of index
+Subject: [PATCH 173/201] rbd: store snapshot id instead of index
 
 When a device was open at a snapshot, and snapshots were deleted or
 added, data from the wrong snapshot could be read. Instead of

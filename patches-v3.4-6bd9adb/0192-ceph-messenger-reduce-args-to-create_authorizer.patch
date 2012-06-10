@@ -1,7 +1,7 @@
 From 74f1869f76d043bad12ec03b4d5f04a8c3d1f157 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:39 -0500
-Subject: [PATCH 191/199] ceph: messenger: reduce args to create_authorizer
+Subject: [PATCH 192/201] ceph: messenger: reduce args to create_authorizer
 
 Make use of the new ceph_auth_handshake structure in order to reduce
 the number of arguments passed to the create_authorizor method in

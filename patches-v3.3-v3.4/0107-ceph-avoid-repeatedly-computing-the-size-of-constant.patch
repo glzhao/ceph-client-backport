@@ -1,7 +1,7 @@
 From 3ce6cd1233046eb97d6d2bd5d80c1cd40528ea2f Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:28 -0600
-Subject: [PATCH 107/154] ceph: avoid repeatedly computing the size of constant vxattr names
+Subject: [PATCH 107/201] ceph: avoid repeatedly computing the size of constant vxattr names
 
 All names defined in the directory and file virtual extended
 attribute tables are constant, and the size of each is known at

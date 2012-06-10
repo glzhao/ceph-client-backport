@@ -1,7 +1,7 @@
 From c666601a935b94cc0f3310339411b6940de751ba Mon Sep 17 00:00:00 2001
 From: Josh Durgin <josh.durgin@dreamhost.com>
 Date: Mon, 21 Nov 2011 17:11:12 -0800
-Subject: [PATCH 154/154] rbd: move snap_rwsem to the device, rename to header_rwsem
+Subject: [PATCH 155/201] rbd: move snap_rwsem to the device, rename to header_rwsem
 
 A new temporary header is allocated each time the header changes, but
 only the changed properties are copied over. We don't need a new

@@ -1,7 +1,7 @@
 From 37675b0f42a8f7699c3602350d1c3b2a1698a3d3 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 7 Mar 2012 11:40:08 -0600
-Subject: [PATCH 147/154] libceph: fix inverted crc option logic
+Subject: [PATCH 148/201] libceph: fix inverted crc option logic
 
 CRC's are computed for all messages between ceph entities.  The CRC
 computation for the data portion of message can optionally be

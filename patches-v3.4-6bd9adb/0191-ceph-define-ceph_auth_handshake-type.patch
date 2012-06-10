@@ -1,7 +1,7 @@
 From 6c4a19158b96ea1fb8acbe0c1d5493d9dcd2f147 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:38 -0500
-Subject: [PATCH 190/199] ceph: define ceph_auth_handshake type
+Subject: [PATCH 191/201] ceph: define ceph_auth_handshake type
 
 The definitions for the ceph_mds_session and ceph_osd both contain
 five fields related only to "authorizers."  Encapsulate those fields

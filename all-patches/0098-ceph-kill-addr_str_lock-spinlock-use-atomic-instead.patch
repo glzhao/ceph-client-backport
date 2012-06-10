@@ -1,7 +1,7 @@
 From f64a93172b97dcfcfa68f595652220653562f605 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:27 -0600
-Subject: [PATCH 098/154] ceph: kill addr_str_lock spinlock; use atomic instead
+Subject: [PATCH 98/201] ceph: kill addr_str_lock spinlock; use atomic instead
 
 A spinlock is used to protect a value used for selecting an array
 index for a string used for formatting a socket address for human

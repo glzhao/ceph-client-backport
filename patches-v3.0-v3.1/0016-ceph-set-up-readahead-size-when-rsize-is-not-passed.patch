@@ -1,7 +1,7 @@
 From e9852227431a0ed6ceda064f33e4218757acab6c Mon Sep 17 00:00:00 2001
 From: Yehuda Sadeh <yehuda@hq.newdream.net>
 Date: Fri, 22 Jul 2011 11:12:28 -0700
-Subject: [PATCH 16/25] ceph: set up readahead size when rsize is not passed
+Subject: [PATCH 16/201] ceph: set up readahead size when rsize is not passed
 
 This should improve the default read performance, as without it
 readahead is practically disabled.

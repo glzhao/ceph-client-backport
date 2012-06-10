@@ -1,7 +1,7 @@
 From 41b90c00858129f52d08e6a05c9cfdb0f2bd074d Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:38 -0500
-Subject: [PATCH 184/199] ceph: messenger: send banner in process_connect()
+Subject: [PATCH 185/201] ceph: messenger: send banner in process_connect()
 
 prepare_write_connect() has an argument indicating whether a banner
 should be sent out before sending out a connection message.  It's

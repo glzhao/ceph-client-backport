@@ -1,7 +1,7 @@
 From 48d0cbd1242aac969560ef8b90f26ee3b09a6a5c Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:30:15 -0700
-Subject: [PATCH 19/25] ceph: handle racing calls to ceph_init_dentry
+Subject: [PATCH 19/201] ceph: handle racing calls to ceph_init_dentry
 
 The ->lookup() and prepopulate_readdir() callers are working with unhashed
 dentries, so we don't have to worry.  The export.c callers, though, need

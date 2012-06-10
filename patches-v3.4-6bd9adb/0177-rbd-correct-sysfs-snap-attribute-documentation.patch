@@ -1,7 +1,7 @@
 From b7f6519e6bc7a0c5a9e3eadc8a2c79c0d4556050 Mon Sep 17 00:00:00 2001
 From: Josh Durgin <josh.durgin@dreamhost.com>
 Date: Thu, 1 Dec 2011 15:12:03 -0800
-Subject: [PATCH 176/199] rbd: correct sysfs snap attribute documentation
+Subject: [PATCH 177/201] rbd: correct sysfs snap attribute documentation
 
 Each attribute is prefixed with "snap_".
 

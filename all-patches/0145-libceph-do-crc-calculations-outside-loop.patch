@@ -1,7 +1,7 @@
 From fe3ad593e2c34457ffa6233014ab19f4d36f85f2 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 15 Feb 2012 07:43:54 -0600
-Subject: [PATCH 144/154] libceph: do crc calculations outside loop
+Subject: [PATCH 145/201] libceph: do crc calculations outside loop
 
 Move blocks of code out of loops in read_partial_message_section()
 and read_partial_message().  They were only was getting called at

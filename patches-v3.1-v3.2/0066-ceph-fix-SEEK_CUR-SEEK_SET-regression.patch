@@ -1,7 +1,7 @@
 From 6a82c47aa84ab22cb5969a44105cca5358879d21 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 13 Dec 2011 09:19:26 -0800
-Subject: [PATCH 66/67] ceph: fix SEEK_CUR, SEEK_SET regression
+Subject: [PATCH 66/201] ceph: fix SEEK_CUR, SEEK_SET regression
 
 Commit 06222e491e663dac939f04b125c9dc52126a75c4 got the if wrong so that
 it always evaluates as true.  This is semantically harmless, but makes

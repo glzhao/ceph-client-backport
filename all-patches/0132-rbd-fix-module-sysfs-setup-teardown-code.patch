@@ -1,7 +1,7 @@
 From fed4c143ba8f08c8bddfdc7c69738e691a06d565 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 7 Feb 2012 12:03:36 -0600
-Subject: [PATCH 131/154] rbd: fix module sysfs setup/teardown code
+Subject: [PATCH 132/201] rbd: fix module sysfs setup/teardown code
 
 Once rbd_bus_type is registered, it allows an "add" operation via
 the /sys/bus/rbd/add bus attribute, and adding a new rbd device that

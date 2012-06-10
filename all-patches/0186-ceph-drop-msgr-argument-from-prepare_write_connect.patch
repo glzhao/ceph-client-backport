@@ -1,7 +1,7 @@
 From e825a66df97776d30a48a187e3a986736af43945 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:38 -0500
-Subject: [PATCH 185/199] ceph: drop msgr argument from prepare_write_connect()
+Subject: [PATCH 186/201] ceph: drop msgr argument from prepare_write_connect()
 
 In all cases, the value passed as the msgr argument to
 prepare_write_connect() is just con->msgr.  Just get the msgr

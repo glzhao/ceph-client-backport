@@ -1,7 +1,7 @@
 From 2ff179e650e95c2b21841b21dc46dc2edefd04cd Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 3 Jan 2012 10:09:07 -0800
-Subject: [PATCH 76/77] ceph: avoid iput() while holding spinlock in ceph_dir_fsync
+Subject: [PATCH 76/201] ceph: avoid iput() while holding spinlock in ceph_dir_fsync
 
 ceph_mdsc_put_request() can call iput(), which can sleep.  Don't do that.
 

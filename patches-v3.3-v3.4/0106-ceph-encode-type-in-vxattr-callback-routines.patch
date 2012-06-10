@@ -1,7 +1,7 @@
 From aa4066ed7ba60421423c35f66b789bb3dd21d89e Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:28 -0600
-Subject: [PATCH 106/154] ceph: encode type in vxattr callback routines
+Subject: [PATCH 106/201] ceph: encode type in vxattr callback routines
 
 The names of the callback functions used for virtual extended
 attributes are based only on the last component of the attribute

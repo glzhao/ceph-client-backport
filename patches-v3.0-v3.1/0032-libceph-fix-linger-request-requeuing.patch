@@ -1,7 +1,7 @@
 From 935b639a049053d0ccbcf7422f2f9cd221642f58 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Fri, 16 Sep 2011 11:13:17 -0700
-Subject: [PATCH 35/37] libceph: fix linger request requeuing
+Subject: [PATCH 32/201] libceph: fix linger request requeuing
 
 The r_req_lru_item list node moves between several lists, and that cycle
 is not directly related (and does not begin) with __register_request().

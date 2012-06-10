@@ -1,7 +1,7 @@
 From 3310f7541f0c991b51324a7712db51fb8f912601 Mon Sep 17 00:00:00 2001
 From: Amon Ott <a.ott@m-privacy.de>
 Date: Thu, 20 Oct 2011 13:04:07 -0700
-Subject: [PATCH 50/51] ceph: fix 32-bit ino numbers
+Subject: [PATCH 50/201] ceph: fix 32-bit ino numbers
 
 Fix 32-bit ino generation to not always be 1.
 

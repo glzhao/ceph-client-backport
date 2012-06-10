@@ -1,7 +1,7 @@
 From d23a4b3fd6ef70b80411b39b8c8bc548a219ce70 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Sun, 29 Jan 2012 13:57:43 -0600
-Subject: [PATCH] rbd: fix safety of rbd_put_client()
+Subject: [PATCH 89/201] rbd: fix safety of rbd_put_client()
 
 The rbd_client structure uses a kref to arrange for cleaning up and
 freeing an instance when its last reference is dropped.  The cleanup

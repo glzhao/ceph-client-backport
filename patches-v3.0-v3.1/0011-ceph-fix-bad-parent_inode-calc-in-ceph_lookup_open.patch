@@ -1,7 +1,7 @@
 From acda76578813ef893004ecad0e5ad2bb6039e5f7 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:27:48 -0700
-Subject: [PATCH 11/25] ceph: fix bad parent_inode calc in ceph_lookup_open
+Subject: [PATCH 11/201] ceph: fix bad parent_inode calc in ceph_lookup_open
 
 We were always getting NULL here because the intent file f_dentry is always
 NULL at this point, which means we were always passing NULL to

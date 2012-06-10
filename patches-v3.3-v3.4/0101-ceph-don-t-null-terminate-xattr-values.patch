@@ -1,7 +1,7 @@
 From b829c1954dbeb42a1277a8cb05943050ee70be94 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:27 -0600
-Subject: [PATCH 101/154] ceph: don't null-terminate xattr values
+Subject: [PATCH 101/201] ceph: don't null-terminate xattr values
 
 For some reason, ceph_setxattr() allocates an extra byte in which a
 '\0' is stored past the end of an extended attribute value.  This is

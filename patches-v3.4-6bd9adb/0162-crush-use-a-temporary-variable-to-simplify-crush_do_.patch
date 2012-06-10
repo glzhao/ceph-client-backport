@@ -1,7 +1,7 @@
 From 0668216efe16ab1adf077e5f138775cee2af927a Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 7 May 2012 15:35:48 -0700
-Subject: [PATCH 161/199] crush: use a temporary variable to simplify crush_do_rule
+Subject: [PATCH 162/201] crush: use a temporary variable to simplify crush_do_rule
 
 Use a temporary variable here to avoid repeated array lookups and clean up
 the code a bit.

@@ -1,7 +1,7 @@
 From 2f90b852e3ae73889d7f6de6ecf429b9b6a6b103 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:28:25 -0700
-Subject: [PATCH 14/25] ceph: ignore lease mask
+Subject: [PATCH 14/201] ceph: ignore lease mask
 
 The lease mask is no longer used (and it changed a while back).  Instead,
 use a non-zero duration to indicate that there is a lease being issued.

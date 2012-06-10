@@ -1,7 +1,7 @@
 From e77dc3e9c061e50c67e2e1a604d0a370f40db298 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 26 Jul 2011 11:26:41 -0700
-Subject: [PATCH 07/25] ceph: only queue capsnap if caps are dirty
+Subject: [PATCH 7/201] ceph: only queue capsnap if caps are dirty
 
 We used to go into this branch if i_wrbuffer_ref_head was non-zero.  This
 was an ancient check from before we were careful about dealing with all

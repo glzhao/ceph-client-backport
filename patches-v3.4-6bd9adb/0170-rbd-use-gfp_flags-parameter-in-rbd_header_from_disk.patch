@@ -1,7 +1,7 @@
 From f8ad495a8a0277b88c59bf38319e5e944aaf5a4a Mon Sep 17 00:00:00 2001
 From: Dan Carpenter <dan.carpenter@oracle.com>
 Date: Fri, 20 Apr 2012 15:49:44 -0500
-Subject: [PATCH 169/199] rbd: use gfp_flags parameter in rbd_header_from_disk()
+Subject: [PATCH 170/201] rbd: use gfp_flags parameter in rbd_header_from_disk()
 
 We should use the gfp_flags that the caller specified instead of
 GFP_KERNEL here.

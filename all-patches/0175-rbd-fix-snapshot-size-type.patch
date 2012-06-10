@@ -1,7 +1,7 @@
 From 3591538fb272d2432d112d47d7e0ddd0be4cded2 Mon Sep 17 00:00:00 2001
 From: Josh Durgin <josh.durgin@dreamhost.com>
 Date: Mon, 5 Dec 2011 18:25:13 -0800
-Subject: [PATCH 174/199] rbd: fix snapshot size type
+Subject: [PATCH 175/201] rbd: fix snapshot size type
 
 Snapshot sizes should be the same type as regular image sizes. This
 only affects their displayed size in sysfs, not the reported size of

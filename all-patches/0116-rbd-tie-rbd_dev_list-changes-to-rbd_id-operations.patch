@@ -1,7 +1,7 @@
 From 499afd5b8e742792fda6bd7730c738ad83aecf6b Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 2 Feb 2012 08:13:29 -0600
-Subject: [PATCH 116/154] rbd: tie rbd_dev_list changes to rbd_id operations
+Subject: [PATCH 116/201] rbd: tie rbd_dev_list changes to rbd_id operations
 
 The only time entries are added to or removed from the global
 rbd_dev_list is exactly when a "put" or "get" operation is being

@@ -1,7 +1,7 @@
 From 881a5fa20092d221a7c4b365742c959ef4b297ec Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:28 -0600
-Subject: [PATCH 105/154] ceph: drop "_cb" from name of struct ceph_vxattr_cb
+Subject: [PATCH 105/201] ceph: drop "_cb" from name of struct ceph_vxattr_cb
 
 A struct ceph_vxattr_cb does not represent a callback at all, but
 rather a virtual extended attribute itself.  Drop the "_cb" suffix

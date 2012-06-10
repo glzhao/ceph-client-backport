@@ -1,7 +1,7 @@
 From cffaba15cd95d4a16eb5a6aa5c22a79f67d555ab Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 15 Feb 2012 07:43:54 -0600
-Subject: [PATCH 141/154] ceph: ensure Boolean options support both senses
+Subject: [PATCH 142/201] ceph: ensure Boolean options support both senses
 
 Many ceph-related Boolean options offer the ability to both enable
 and disable a feature.  For all those that don't offer this, add

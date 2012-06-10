@@ -1,7 +1,7 @@
 From 2107978668de13da484f7abc3f03516494c7fca9 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 24 Jan 2012 10:08:36 -0600
-Subject: [PATCH 109/154] rbd: a few small cleanups
+Subject: [PATCH 109/201] rbd: a few small cleanups
 
 Some minor cleanups in "drivers/block/rbd.c:
     - Use the more meaningful "RBD_MAX_OBJ_NAME_LEN" in place if "96"

@@ -1,7 +1,7 @@
 From 432b858749631dc011ac919dace4b0705ba8cecf Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Sun, 29 Jan 2012 13:57:44 -0600
-Subject: [PATCH 121/154] rbd: rename "node_lock"
+Subject: [PATCH 121/201] rbd: rename "node_lock"
 
 The spinlock used to protect rbd_client_list is named "node_lock".
 Rename it to "rbd_client_list_lock" to make it more obvious what

@@ -1,7 +1,7 @@
 From e28fff268e7d40ea7a936478c97ce41b6c22815f Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 2 Feb 2012 08:13:30 -0600
-Subject: [PATCH 127/154] rbd: don't use sscanf() in rbd_add_parse_args()
+Subject: [PATCH 128/201] rbd: don't use sscanf() in rbd_add_parse_args()
 
 Make use of a few simple helper routines to parse the arguments
 rather than sscanf().  This will treat both missing and too-long

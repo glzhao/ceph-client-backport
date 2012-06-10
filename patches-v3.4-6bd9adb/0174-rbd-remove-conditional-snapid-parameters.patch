@@ -1,7 +1,7 @@
 From b06e6a6be796bc365a19b0ac5176b553c13abf2f Mon Sep 17 00:00:00 2001
 From: Josh Durgin <josh.durgin@dreamhost.com>
 Date: Mon, 21 Nov 2011 18:16:52 -0800
-Subject: [PATCH 173/199] rbd: remove conditional snapid parameters
+Subject: [PATCH 174/201] rbd: remove conditional snapid parameters
 
 The snapid parameters passed to rbd_do_op() and rbd_req_sync_op()
 are now always either a valid snapid or an explicit CEPH_NOSNAP.

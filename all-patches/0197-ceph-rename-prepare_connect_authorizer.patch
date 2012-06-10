@@ -1,7 +1,7 @@
 From dac1e716c60161867a47745bca592987ca3a9cb2 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:39 -0500
-Subject: [PATCH 196/199] ceph: rename prepare_connect_authorizer()
+Subject: [PATCH 197/201] ceph: rename prepare_connect_authorizer()
 
 Change the name of prepare_connect_authorizer().  The next
 patch is going to make this function no longer add anything to the

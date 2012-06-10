@@ -1,7 +1,7 @@
 From 774ac21da76f5c3018428725074e27a3fd40b128 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Fri, 11 Nov 2011 09:48:08 -0800
-Subject: [PATCH 60/61] ceph: initialize root dentry
+Subject: [PATCH 59/201] ceph: initialize root dentry
 
 Set up d_fsdata on the root dentry.  This fixes a NULL pointer dereference
 in ceph_d_prune on umount.  It also means we can eventually strip out all

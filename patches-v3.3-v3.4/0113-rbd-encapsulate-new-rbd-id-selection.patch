@@ -1,7 +1,7 @@
 From b7f23c361b65a0bdcc81acd8d38471b7810df3ff Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Sun, 29 Jan 2012 13:57:43 -0600
-Subject: [PATCH 113/154] rbd: encapsulate new rbd id selection
+Subject: [PATCH 113/201] rbd: encapsulate new rbd id selection
 
 Move the loop that finds a new unique rbd id to use into
 its own helper function.

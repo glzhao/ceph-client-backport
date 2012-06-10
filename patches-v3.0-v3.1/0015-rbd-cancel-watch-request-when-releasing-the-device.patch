@@ -1,7 +1,7 @@
 From 79e3057c4c9d32b88e6745fd220d91b0a8b2030b Mon Sep 17 00:00:00 2001
 From: Yehuda Sadeh <yehuda@hq.newdream.net>
 Date: Tue, 12 Jul 2011 16:56:57 -0700
-Subject: [PATCH 15/25] rbd: cancel watch request when releasing the device
+Subject: [PATCH 15/201] rbd: cancel watch request when releasing the device
 
 We were missing this cleanup, so when a device was released
 the osd didn't clean up its watchers list, so following notifications

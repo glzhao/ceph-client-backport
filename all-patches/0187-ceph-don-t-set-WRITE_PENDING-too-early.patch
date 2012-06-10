@@ -1,7 +1,7 @@
 From e10c758e4031a801ea4d2f8fb39bf14c2658d74b Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:38 -0500
-Subject: [PATCH 186/199] ceph: don't set WRITE_PENDING too early
+Subject: [PATCH 187/201] ceph: don't set WRITE_PENDING too early
 
 prepare_write_connect() prepares a connect message, then sets
 WRITE_PENDING on the connection.  Then *after* this, it calls

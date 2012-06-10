@@ -1,7 +1,7 @@
 From c0d5f9db1c7d1b8a9e2f217706e8ea233bac2754 Mon Sep 17 00:00:00 2001
 From: Jim Schutt <jaschut@sandia.gov>
 Date: Fri, 16 Sep 2011 08:27:31 -0600
-Subject: [PATCH 33/37] libceph: initialize ack_stamp to avoid unnecessary connection reset
+Subject: [PATCH 30/201] libceph: initialize ack_stamp to avoid unnecessary connection reset
 
 Commit 4cf9d544631c recorded when an outgoing ceph message was ACKed,
 in order to avoid unnecessary connection resets when an OSD is busy.

@@ -1,7 +1,7 @@
 From a255651d4cad89f1a606edd36135af892ada4f20 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Wed, 16 May 2012 15:16:39 -0500
-Subject: [PATCH 192/199] ceph: ensure auth ops are defined before use
+Subject: [PATCH 193/201] ceph: ensure auth ops are defined before use
 
 In the create_authorizer method for both the mds and osd clients,
 the auth_client->ops pointer is blindly dereferenced.  There is no

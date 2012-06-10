@@ -1,7 +1,7 @@
 From 57dac9d1620942608306d8c17c98a9d1568ffdf4 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@inktank.com>
 Date: Thu, 10 May 2012 10:29:50 -0500
-Subject: [PATCH 177/199] ceph: messenger: use read_partial() in read_partial_message()
+Subject: [PATCH 178/201] ceph: messenger: use read_partial() in read_partial_message()
 
 There are two blocks of code in read_partial_message()--those that
 read the header and footer of the message--that can be replaced by a

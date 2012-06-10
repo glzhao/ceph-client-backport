@@ -1,7 +1,7 @@
 From 963be4d7709f84d865f76d12d5b0ec7edad1c498 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 14 Feb 2012 14:05:33 -0600
-Subject: [PATCH 135/154] libceph: move prepare_write_banner()
+Subject: [PATCH 136/201] libceph: move prepare_write_banner()
 
 One of the arguments to prepare_write_connect() indicates whether it
 is being called immediately after a call to prepare_write_banner().

@@ -1,7 +1,7 @@
 From a40dc6cc2e121abcbd1b22583ef5447763df510c Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 10 Jan 2012 09:12:55 -0800
-Subject: [PATCH 88/90] ceph: enable/disable dentry complete flags via mount option
+Subject: [PATCH 80/201] ceph: enable/disable dentry complete flags via mount option
 
 Enable/disable use of the dentry dir 'complete' flag via a mount option.
 This lets the admin control whether ceph uses the dcache to satisfy

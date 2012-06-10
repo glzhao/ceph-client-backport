@@ -1,7 +1,7 @@
 From bd406145129e8724cc71b65ff2a788dbd4d60c50 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:27 -0600
-Subject: [PATCH 099/154] ceph: eliminate some needless casts
+Subject: [PATCH 99/201] ceph: eliminate some needless casts
 
 This eliminates type casts in some places where they are not
 required.

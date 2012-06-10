@@ -1,7 +1,7 @@
 From 065a68f9167e20f321a62d044cb2c3024393d455 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreawmhost.com>
 Date: Fri, 20 Apr 2012 15:49:43 -0500
-Subject: [PATCH 167/199] ceph: osd_client: fix endianness bug in osd_req_encode_op()
+Subject: [PATCH 168/201] ceph: osd_client: fix endianness bug in osd_req_encode_op()
 
 From Al Viro <viro@zeniv.linux.org.uk>
 

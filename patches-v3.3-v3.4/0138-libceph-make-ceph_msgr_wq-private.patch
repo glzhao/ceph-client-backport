@@ -1,7 +1,7 @@
 From e0f43c9419c1900e5b50de4261e9686a45a0a2b8 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 14 Feb 2012 14:05:33 -0600
-Subject: [PATCH 137/154] libceph: make ceph_msgr_wq private
+Subject: [PATCH 138/201] libceph: make ceph_msgr_wq private
 
 The messenger workqueue has no need to be public.  So give it static
 scope.

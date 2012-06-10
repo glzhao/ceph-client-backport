@@ -1,7 +1,7 @@
 From c90f95ed46393e29d843686e21947d1c6fcb1164 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 7 May 2012 15:35:09 -0700
-Subject: [PATCH 159/199] crush: adjust local retry threshold
+Subject: [PATCH 160/201] crush: adjust local retry threshold
 
 This small adjustment reflects a change that was made in ceph.git commit
 af6a9f30696c900a2a8bd7ae24e8ed15fb4964bb, about 6 months ago.  An N-1

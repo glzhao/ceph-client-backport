@@ -1,7 +1,7 @@
 From be655596b3de5873f994ddbe205751a5ffb4de39 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Wed, 30 Nov 2011 09:47:09 -0800
-Subject: [PATCH 64/64] ceph: use i_ceph_lock instead of i_lock
+Subject: [PATCH 64/201] ceph: use i_ceph_lock instead of i_lock
 
 We have been using i_lock to protect all kinds of data structures in the
 ceph_inode_info struct, including lists of inodes that we need to iterate

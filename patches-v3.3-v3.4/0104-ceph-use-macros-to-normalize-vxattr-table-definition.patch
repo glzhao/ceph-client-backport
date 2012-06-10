@@ -1,7 +1,7 @@
 From eb78808446aeed8e25b080c66bf823c1f188236d Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:28 -0600
-Subject: [PATCH 104/154] ceph: use macros to normalize vxattr table definitions
+Subject: [PATCH 104/201] ceph: use macros to normalize vxattr table definitions
 
 Entries in the ceph virtual extended attribute tables all follow a
 distinct pattern in their definition.  Enforce this pattern through

@@ -1,7 +1,7 @@
 From d97081b0c7bdb55371994cc6690217bf393eb63e Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Sun, 29 Jan 2012 13:57:44 -0600
-Subject: [PATCH 119/154] rbd: move ctl_mutex lock inside rbd_get_client()
+Subject: [PATCH 119/201] rbd: move ctl_mutex lock inside rbd_get_client()
 
 Since rbd_get_client() is only called in one place, move the
 acquisition of the mutex around that call inside that function.

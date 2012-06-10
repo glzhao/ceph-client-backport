@@ -1,7 +1,7 @@
 From d184f6bfde1428ad4a690d49b28afc9ab4d57b35 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Sun, 29 Jan 2012 13:57:44 -0600
-Subject: [PATCH 117/154] rbd: restore previous rbd id sequence behavior
+Subject: [PATCH 117/201] rbd: restore previous rbd id sequence behavior
 
 It used to be that selecting a new unique identifier for an added
 rbd device required searching all existing ones to find the highest

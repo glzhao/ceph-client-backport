@@ -1,7 +1,7 @@
 From bca064d236a2e3162a07c758855221bcbe3c475b Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 15 Feb 2012 07:43:54 -0600
-Subject: [PATCH 142/154] libceph: use "do" in CRC-related Boolean variables
+Subject: [PATCH 143/201] libceph: use "do" in CRC-related Boolean variables
 
 Change the name (and type) of a few CRC-related Boolean local
 variables so they contain the word "do", to distingish their purpose

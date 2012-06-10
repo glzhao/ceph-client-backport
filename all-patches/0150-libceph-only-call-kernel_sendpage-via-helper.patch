@@ -1,7 +1,7 @@
 From e36b13cceb46136d849aeee06b4907ad3570ba78 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 7 Mar 2012 11:40:08 -0600
-Subject: [PATCH 149/154] libceph: only call kernel_sendpage() via helper
+Subject: [PATCH 150/201] libceph: only call kernel_sendpage() via helper
 
 Make ceph_tcp_sendpage() be the only place kernel_sendpage() is
 used, by using this helper in write_partial_msg_pages().

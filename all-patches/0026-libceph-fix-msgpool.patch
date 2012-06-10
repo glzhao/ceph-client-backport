@@ -1,7 +1,7 @@
 From 5185352c163a72cf969b2fbbfb89801b398896fd Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Tue, 9 Aug 2011 14:48:11 -0700
-Subject: [PATCH] libceph: fix msgpool
+Subject: [PATCH 26/201] libceph: fix msgpool
 
 There were several problems here:
 

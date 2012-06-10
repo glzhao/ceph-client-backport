@@ -1,7 +1,7 @@
 From 1ddbe94eda58597cb6dd464b455cb62d3f68be7b Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Sun, 29 Jan 2012 13:57:44 -0600
-Subject: [PATCH 114/154] rbd: rework calculation of new rbd id's
+Subject: [PATCH 114/201] rbd: rework calculation of new rbd id's
 
 In order to select a new unique identifier for an added rbd device,
 the list of all existing ones is searched and a value one greater

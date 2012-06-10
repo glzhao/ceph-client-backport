@@ -1,7 +1,7 @@
 From a5bc3129a296fd4663c3ef0be5575e82453739dd Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Mon, 23 Jan 2012 15:49:27 -0600
-Subject: [PATCH 097/154] ceph: make use of "else" where appropriate
+Subject: [PATCH 97/201] ceph: make use of "else" where appropriate
 
 Rearrange ceph_tcp_connect() a bit, making use of "else" rather than
 re-testing a value with consecutive "if" statements.  Don't record a

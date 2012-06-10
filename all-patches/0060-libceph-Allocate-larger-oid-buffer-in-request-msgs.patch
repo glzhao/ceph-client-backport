@@ -1,7 +1,7 @@
 From 224736d9113ab4a7cf3f05c05377492bd99b4b02 Mon Sep 17 00:00:00 2001
 From: Stratos Psomadakis <psomas@grnet.gr>
 Date: Thu, 10 Nov 2011 15:45:37 +0200
-Subject: [PATCH] libceph: Allocate larger oid buffer in request msgs
+Subject: [PATCH 60/201] libceph: Allocate larger oid buffer in request msgs
 
 ceph_osd_request struct allocates a 40-byte buffer for object names.
 RBD image names can be up to 96 chars long (100 with the .rbd suffix),

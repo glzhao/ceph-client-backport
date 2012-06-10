@@ -1,7 +1,7 @@
 From e6994d3ddedf1a9f35cb43655bb4b5810e71199a Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Sun, 29 Jan 2012 13:57:44 -0600
-Subject: [PATCH 118/154] rbd: release client list lock sooner
+Subject: [PATCH 118/201] rbd: release client list lock sooner
 
 In rbd_get_client(), if a client is reused, a number of things
 get done while still holding the list lock unnecessarily.

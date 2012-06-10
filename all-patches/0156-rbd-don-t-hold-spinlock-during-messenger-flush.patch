@@ -1,7 +1,7 @@
 From cd9d9f5df6098c50726200d4185e9e8da32785b3 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Wed, 4 Apr 2012 13:35:44 -0500
-Subject: [PATCH 155/199] rbd: don't hold spinlock during messenger flush
+Subject: [PATCH 156/201] rbd: don't hold spinlock during messenger flush
 
 A recent change made changes to the rbd_client_list be protected by
 a spinlock.  Unfortunately in rbd_put_client(), the lock is taken

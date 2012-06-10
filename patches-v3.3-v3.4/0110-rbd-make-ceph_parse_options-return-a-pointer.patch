@@ -1,7 +1,7 @@
 From ee57741c5209154b8ef124bcaa2496da1b69a988 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Tue, 24 Jan 2012 10:08:36 -0600
-Subject: [PATCH 110/154] rbd: make ceph_parse_options() return a pointer
+Subject: [PATCH 110/201] rbd: make ceph_parse_options() return a pointer
 
 ceph_parse_options() takes the address of a pointer as an argument
 and uses it to return the address of an allocated structure if

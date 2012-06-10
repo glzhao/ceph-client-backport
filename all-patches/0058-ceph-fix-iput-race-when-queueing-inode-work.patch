@@ -1,7 +1,7 @@
 From 15a2015fbc692e1c97d7ce12d96e077f5ae7ea6d Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@newdream.net>
 Date: Sat, 5 Nov 2011 22:06:31 -0700
-Subject: [PATCH] ceph: fix iput race when queueing inode work
+Subject: [PATCH 58/201] ceph: fix iput race when queueing inode work
 
 If we queue a work item that calls iput(), make sure we ihold() before
 attempting to queue work. Otherwise our queued work might miraculously run

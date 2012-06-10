@@ -1,7 +1,7 @@
 From 81a897937827a81107861d50c77b4d04ff8b43a2 Mon Sep 17 00:00:00 2001
 From: Alex Elder <elder@dreamhost.com>
 Date: Thu, 2 Feb 2012 08:13:30 -0600
-Subject: [PATCH 128/154] rbd: do a few checks at build time
+Subject: [PATCH 129/201] rbd: do a few checks at build time
 
 This is a bit gratuitous, but there are a few things that can be
 verified at build time rather than run time, so do that.

@@ -1,7 +1,7 @@
 From a1f4895be8bf1ba56c2306b058f51619e9b0e8f8 Mon Sep 17 00:00:00 2001
 From: Sage Weil <sage@inktank.com>
 Date: Mon, 7 May 2012 15:35:24 -0700
-Subject: [PATCH 160/199] crush: be more tolerant of nonsensical crush maps
+Subject: [PATCH 161/201] crush: be more tolerant of nonsensical crush maps
 
 If we get a map that doesn't make sense, error out or ignore the badness
 instead of BUGging out.  This reflects the ceph.git commits

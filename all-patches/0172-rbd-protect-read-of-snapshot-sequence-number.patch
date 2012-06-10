@@ -1,7 +1,7 @@
 From 403f24d3d51760a8b9368d595fa5f48c309f1a0f Mon Sep 17 00:00:00 2001
 From: Josh Durgin <josh.durgin@dreamhost.com>
 Date: Mon, 5 Dec 2011 10:47:13 -0800
-Subject: [PATCH 171/199] rbd: protect read of snapshot sequence number
+Subject: [PATCH 172/201] rbd: protect read of snapshot sequence number
 
 This is updated whenever a snapshot is added or deleted, and the
 snapc pointer is changed with every refresh of the header.
