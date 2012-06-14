@@ -30,3 +30,5 @@ note:
 the memo of all patches
 mails:
 patches which were sent for review
+patches-applied:
+patches set which are applied
