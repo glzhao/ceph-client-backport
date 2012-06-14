@@ -1,0 +1,104 @@
+From: Sage Weil <sage@newdream.net>
+Date: Wed, 24 Aug 2011 14:07:01 -0700
+Subject: [PATCH 044/199] Revert "ceph: don't truncate dirty pages in invalidate work thread"
+
+Git-commit: 83eaea22bdfc9e1cec88f81be5b64f30f6c37e8b
+Patch-mainline: v3.2
+References: ceph backport
+
+This reverts commit c9af9fb68e01eb2c2165e1bc45cfeeed510c64e6.
+
+We need to block and truncate all pages in order to reliably invalidate
+them.  Otherwise, we could:
+
+ - have some uptodate pages in the cache
+ - queue an invalidate
+ - write(2) locks some pages
+ - invalidate_work skips them
+ - write(2) only overwrites part of the page
+ - page now dirty and uptodate
+ -> partial leakage of invalidated data
+
+It's not entirely clear why we started skipping locked pages in the first
+place.  I just ran this through fsx and didn't see any problems.
+
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/inode.c |   46 +---------------------------------------------
+ 1 files changed, 1 insertions(+), 45 deletions(-)
+
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index 095799b..5dde7d51 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -9,7 +9,6 @@
+ #include <linux/namei.h>
+ #include <linux/writeback.h>
+ #include <linux/vmalloc.h>
+-#include <linux/pagevec.h>
+ 
+ #include "super.h"
+ #include "mds_client.h"
+@@ -1364,49 +1363,6 @@ void ceph_queue_invalidate(struct inode *inode)
+ }
+ 
+ /*
+- * invalidate any pages that are not dirty or under writeback.  this
+- * includes pages that are clean and mapped.
+- */
+-static void ceph_invalidate_nondirty_pages(struct address_space *mapping)
+-{
+-	struct pagevec pvec;
+-	pgoff_t next = 0;
+-	int i;
+-
+-	pagevec_init(&pvec, 0);
+-	while (pagevec_lookup(&pvec, mapping, next, PAGEVEC_SIZE)) {
+-		for (i = 0; i < pagevec_count(&pvec); i++) {
+-			struct page *page = pvec.pages[i];
+-			pgoff_t index;
+-			int skip_page =
+-				(PageDirty(page) || PageWriteback(page));
+-
+-			if (!skip_page)
+-				skip_page = !trylock_page(page);
+-
+-			/*
+-			 * We really shouldn't be looking at the ->index of an
+-			 * unlocked page.  But we're not allowed to lock these
+-			 * pages.  So we rely upon nobody altering the ->index
+-			 * of this (pinned-by-us) page.
+-			 */
+-			index = page->index;
+-			if (index > next)
+-				next = index;
+-			next++;
+-
+-			if (skip_page)
+-				continue;
+-
+-			generic_error_remove_page(mapping, page);
+-			unlock_page(page);
+-		}
+-		pagevec_release(&pvec);
+-		cond_resched();
+-	}
+-}
+-
+-/*
+  * Invalidate inode pages in a worker thread.  (This can't be done
+  * in the message handler context.)
+  */
+@@ -1429,7 +1385,7 @@ static void ceph_invalidate_work(struct work_struct *work)
+ 	orig_gen = ci->i_rdcache_gen;
+ 	spin_unlock(&inode->i_lock);
+ 
+-	ceph_invalidate_nondirty_pages(inode->i_mapping);
++	truncate_inode_pages(&inode->i_data, 0);
+ 
+ 	spin_lock(&inode->i_lock);
+ 	if (orig_gen == ci->i_rdcache_gen &&
+-- 
+1.7.3.4
+

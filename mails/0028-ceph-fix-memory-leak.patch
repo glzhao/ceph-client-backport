@@ -1,0 +1,36 @@
+From: Noah Watkins <noahwatkins@gmail.com>
+Date: Mon, 22 Aug 2011 13:49:41 -0600
+Subject: [PATCH 028/199] ceph: fix memory leak
+
+Git-commit: 259a187ade45056fd44856654f78aa9e9f0f7c75
+Patch-mainline: v3.1
+References: ceph backport
+
+kfree does not clean up indirect allocations in
+ceph_fs_client and ceph_options (e.g. snapdir_name).
+
+Signed-off-by: Noah Watkins <noahwatkins@gmail.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/super.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/ceph/super.c b/fs/ceph/super.c
+index d47c5ec..88bacaf 100644
+--- a/fs/ceph/super.c
++++ b/fs/ceph/super.c
+@@ -813,8 +813,8 @@ static struct dentry *ceph_mount(struct file_system_type *fs_type,
+ 	fsc = create_fs_client(fsopt, opt);
+ 	if (IS_ERR(fsc)) {
+ 		res = ERR_CAST(fsc);
+-		kfree(fsopt);
+-		kfree(opt);
++		destroy_mount_options(fsopt);
++		ceph_destroy_options(opt);
+ 		goto out_final;
+ 	}
+ 
+-- 
+1.7.3.4
+

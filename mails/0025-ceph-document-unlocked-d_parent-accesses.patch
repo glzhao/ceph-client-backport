@@ -1,0 +1,74 @@
+From: Sage Weil <sage@newdream.net>
+Date: Tue, 26 Jul 2011 11:31:26 -0700
+Subject: [PATCH 025/199] ceph: document unlocked d_parent accesses
+
+Git-commit: d79698da32b317e96216236f265a9b72b78ae568
+Patch-mainline: v3.1
+References: ceph backport
+
+For the most part we don't care about racing with rename when directing
+MDS requests; either the old or new parent is fine.  Document that, and
+do some minor cleanup.
+
+Reviewed-by: Yehuda Sadeh <yehuda@hq.newdream.net>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/dir.c        |    2 +-
+ fs/ceph/mds_client.c |   13 ++++++++++---
+ 2 files changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index 7263f82..852ff86 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -506,7 +506,7 @@ int ceph_handle_snapdir(struct ceph_mds_request *req,
+ 			struct dentry *dentry, int err)
+ {
+ 	struct ceph_fs_client *fsc = ceph_sb_to_client(dentry->d_sb);
+-	struct inode *parent = dentry->d_parent->d_inode;
++	struct inode *parent = dentry->d_parent->d_inode; /* we hold i_mutex */
+ 
+ 	/* .snap dir? */
+ 	if (err == -ENOENT &&
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 66a8939..fee028b 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -621,6 +621,12 @@ static void __unregister_request(struct ceph_mds_client *mdsc,
+  */
+ struct dentry *get_nonsnap_parent(struct dentry *dentry)
+ {
++	/*
++	 * we don't need to worry about protecting the d_parent access
++	 * here because we never renaming inside the snapped namespace
++	 * except to resplice to another snapdir, and either the old or new
++	 * result is a valid result.
++	 */
+ 	while (!IS_ROOT(dentry) && ceph_snap(dentry->d_inode) != CEPH_NOSNAP)
+ 		dentry = dentry->d_parent;
+ 	return dentry;
+@@ -656,7 +662,9 @@ static int __choose_mds(struct ceph_mds_client *mdsc,
+ 	if (req->r_inode) {
+ 		inode = req->r_inode;
+ 	} else if (req->r_dentry) {
+-		struct inode *dir = req->r_dentry->d_parent->d_inode;
++		/* ignore race with rename; old or new d_parent is okay */
++		struct dentry *parent = req->r_dentry->d_parent;
++		struct inode *dir = parent->d_inode;
+ 
+ 		if (dir->i_sb != mdsc->fsc->sb) {
+ 			/* not this fs! */
+@@ -664,8 +672,7 @@ static int __choose_mds(struct ceph_mds_client *mdsc,
+ 		} else if (ceph_snap(dir) != CEPH_NOSNAP) {
+ 			/* direct snapped/virtual snapdir requests
+ 			 * based on parent dir inode */
+-			struct dentry *dn =
+-				get_nonsnap_parent(req->r_dentry->d_parent);
++			struct dentry *dn = get_nonsnap_parent(parent);
+ 			inode = dn->d_inode;
+ 			dout("__choose_mds using nonsnap parent %p\n", inode);
+ 		} else if (req->r_dentry->d_inode) {
+-- 
+1.7.3.4
+

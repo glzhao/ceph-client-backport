@@ -1,0 +1,54 @@
+From: Al Viro <viro@zeniv.linux.org.uk>
+Date: Mon, 9 Jan 2012 16:34:32 -0500
+Subject: [PATCH 069/199] ceph: d_alloc_root() may fail
+
+Git-commit: 3c5184ef1216dd476c9c67f22a199d90ac4d5892
+Patch-mainline: v3.3
+References: ceph backport
+
+... and ceph_init_dentry(NULL) will oops
+
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/super.c |   15 +++++++++++----
+ 1 files changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/fs/ceph/super.c b/fs/ceph/super.c
+index 11bd0fc..48f61a1 100644
+--- a/fs/ceph/super.c
++++ b/fs/ceph/super.c
+@@ -636,19 +636,26 @@ static struct dentry *open_root_dentry(struct ceph_fs_client *fsc,
+ 	req->r_num_caps = 2;
+ 	err = ceph_mdsc_do_request(mdsc, NULL, req);
+ 	if (err == 0) {
++		struct inode *inode = req->r_target_inode;
++		req->r_target_inode = NULL;
+ 		dout("open_root_inode success\n");
+-		if (ceph_ino(req->r_target_inode) == CEPH_INO_ROOT &&
++		if (ceph_ino(inode) == CEPH_INO_ROOT &&
+ 		    fsc->sb->s_root == NULL) {
+-			root = d_alloc_root(req->r_target_inode);
++			root = d_alloc_root(inode);
++			if (!root) {
++				iput(inode);
++				root = ERR_PTR(-ENOMEM);
++				goto out;
++			}
+ 			ceph_init_dentry(root);
+ 		} else {
+-			root = d_obtain_alias(req->r_target_inode);
++			root = d_obtain_alias(inode);
+ 		}
+-		req->r_target_inode = NULL;
+ 		dout("open_root_inode success, root dentry is %p\n", root);
+ 	} else {
+ 		root = ERR_PTR(err);
+ 	}
++out:
+ 	ceph_mdsc_put_request(req);
+ 	return root;
+ }
+-- 
+1.7.3.4
+

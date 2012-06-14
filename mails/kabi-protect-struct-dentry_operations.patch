@@ -1,0 +1,28 @@
+From: Jiaju Zhang <jjzhang@suse.de>
+Subject: [PATCH 052/199] kABI: protect struct dentry_operations
+
+References: ceph backport
+Patch-mainline: never
+
+Signed-off-by: Jiaju Zhang <jjzhang@suse.de>
+---
+ include/linux/dcache.h |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/include/linux/dcache.h
++++ b/include/linux/dcache.h
+@@ -165,11 +165,13 @@ struct dentry_operations {
+ 			unsigned int, const char *, const struct qstr *);
+ 	int (*d_delete)(const struct dentry *);
+ 	void (*d_release)(struct dentry *);
+-	void (*d_prune)(struct dentry *);
+ 	void (*d_iput)(struct dentry *, struct inode *);
+ 	char *(*d_dname)(struct dentry *, char *, int);
+ 	struct vfsmount *(*d_automount)(struct path *);
+ 	int (*d_manage)(struct dentry *, bool);
++#ifndef __GENKSYMS__
++	void (*d_prune)(struct dentry *);
++#endif
+ } ____cacheline_aligned;
+ 
+ /*

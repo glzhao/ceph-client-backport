@@ -1,0 +1,69 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Thu, 8 Mar 2012 16:50:09 -0600
+Subject: [PATCH 152/199] ceph: fix three bugs, two in ceph_vxattrcb_file_layout()
+
+Git-commit: 3489b42a72a41d477665ab37f196ae9257180abb
+Patch-mainline: v3.4
+References: ceph backport
+
+In ceph_vxattrcb_file_layout(), there is a check to determine
+whether a preferred PG should be formatted into the output buffer.
+That check assumes that a preferred PG number of 0 indicates "no
+preference," but that is wrong.  No preference is indicated by a
+negative (specifically, -1) PG number.
+
+In addition, if that condition yields true, the preferred value
+is formatted into a sized buffer, but the size consumed by the
+earlier snprintf() call is not accounted for, opening up the
+possibilty of a buffer overrun.
+
+Finally, in ceph_vxattrcb_dir_rctime() where the nanoseconds part of
+the time displayed did not include leading 0's, which led to
+erroneous (sub-second portion of) time values being shown.
+
+This fixes these three issues:
+    http://tracker.newdream.net/issues/2155
+    http://tracker.newdream.net/issues/2156
+    http://tracker.newdream.net/issues/2157
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Reviewed-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/xattr.c |   11 ++++++++---
+ 1 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
+index 8294f46..35b8633 100644
+--- a/fs/ceph/xattr.c
++++ b/fs/ceph/xattr.c
+@@ -79,7 +79,7 @@ static size_t ceph_vxattrcb_dir_rbytes(struct ceph_inode_info *ci, char *val,
+ static size_t ceph_vxattrcb_dir_rctime(struct ceph_inode_info *ci, char *val,
+ 				       size_t size)
+ {
+-	return snprintf(val, size, "%ld.%ld", (long)ci->i_rctime.tv_sec,
++	return snprintf(val, size, "%ld.09%ld", (long)ci->i_rctime.tv_sec,
+ 			(long)ci->i_rctime.tv_nsec);
+ }
+ 
+@@ -118,10 +118,15 @@ static size_t ceph_vxattrcb_file_layout(struct ceph_inode_info *ci, char *val,
+ 		(unsigned long long)ceph_file_layout_su(ci->i_layout),
+ 		(unsigned long long)ceph_file_layout_stripe_count(ci->i_layout),
+ 		(unsigned long long)ceph_file_layout_object_size(ci->i_layout));
+-	if (ceph_file_layout_pg_preferred(ci->i_layout))
+-		ret += snprintf(val + ret, size, "preferred_osd=%lld\n",
++
++	if (ceph_file_layout_pg_preferred(ci->i_layout) >= 0) {
++		val += ret;
++		size -= ret;
++		ret += snprintf(val, size, "preferred_osd=%lld\n",
+ 			    (unsigned long long)ceph_file_layout_pg_preferred(
+ 				    ci->i_layout));
++	}
++
+ 	return ret;
+ }
+ 
+-- 
+1.7.3.4
+

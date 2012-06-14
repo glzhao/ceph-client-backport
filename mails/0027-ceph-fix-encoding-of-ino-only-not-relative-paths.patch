@@ -1,0 +1,34 @@
+From: Sage Weil <sage@newdream.net>
+Date: Mon, 15 Aug 2011 13:02:37 -0700
+Subject: [PATCH 027/199] ceph: fix encoding of ino only (not relative) paths
+
+Git-commit: 795858dbd253462a67e14272edeaae73c6074b17
+Patch-mainline: v3.1
+References: ceph backport
+
+A 'path' consists of a starting ino and relative component.  Encode even
+when there is no relative component.  This is primarily needed by the
+NFS reexport code.
+
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/mds_client.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index fee028b..86c59e1 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -1595,7 +1595,7 @@ static int set_request_path_attr(struct inode *rinode, struct dentry *rdentry,
+ 		r = build_dentry_path(rdentry, ppath, pathlen, ino, freepath);
+ 		dout(" dentry %p %llx/%.*s\n", rdentry, *ino, *pathlen,
+ 		     *ppath);
+-	} else if (rpath) {
++	} else if (rpath || rino) {
+ 		*ino = rino;
+ 		*ppath = rpath;
+ 		*pathlen = strlen(rpath);
+-- 
+1.7.3.4
+

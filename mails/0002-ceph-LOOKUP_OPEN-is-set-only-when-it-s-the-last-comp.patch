@@ -1,0 +1,29 @@
+From: Al Viro <viro@zeniv.linux.org.uk>
+Date: Sat, 25 Jun 2011 21:43:56 -0400
+Subject: [PATCH 002/199] ceph: LOOKUP_OPEN is set only when it's the last component
+
+Git-commit: a127e0af59ab610e8b37ac2dfa4cdb2ec8c8f604
+Patch-mainline: v3.1
+References: ceph backport
+
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/dir.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index ef8f08c..b6d436f 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -566,7 +566,6 @@ static struct dentry *ceph_lookup(struct inode *dir, struct dentry *dentry,
+ 	/* open (but not create!) intent? */
+ 	if (nd &&
+ 	    (nd->flags & LOOKUP_OPEN) &&
+-	    (nd->flags & LOOKUP_CONTINUE) == 0 && /* only open last component */
+ 	    !(nd->intent.open.flags & O_CREAT)) {
+ 		int mode = nd->intent.open.create_mode & ~current->fs->umask;
+ 		return ceph_lookup_open(dir, dentry, nd, mode, 1);
+-- 
+1.7.3.4
+

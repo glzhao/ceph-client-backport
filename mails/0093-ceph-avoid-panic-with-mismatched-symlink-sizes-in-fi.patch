@@ -1,0 +1,52 @@
+From: Xi Wang <xi.wang@gmail.com>
+Date: Fri, 3 Feb 2012 09:55:36 -0500
+Subject: [PATCH 091/199] ceph: avoid panic with mismatched symlink sizes in fill_inode()
+
+Git-commit: 810339ec2fae5cbd0164b8acde7fb65652755864
+Patch-mainline: v3.4
+References: ceph backport
+
+Return -EINVAL rather than panic if iinfo->symlink_len and inode->i_size
+do not match.
+
+Also use kstrndup rather than kmalloc/memcpy.
+
+Signed-off-by: Xi Wang <xi.wang@gmail.com>
+Reviewed-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/inode.c |   11 ++++++-----
+ 1 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index 2c48937..9fff9f3 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -677,18 +677,19 @@ static int fill_inode(struct inode *inode,
+ 	case S_IFLNK:
+ 		inode->i_op = &ceph_symlink_iops;
+ 		if (!ci->i_symlink) {
+-			int symlen = iinfo->symlink_len;
++			u32 symlen = iinfo->symlink_len;
+ 			char *sym;
+ 
+-			BUG_ON(symlen != inode->i_size);
+ 			spin_unlock(&ci->i_ceph_lock);
+ 
++			err = -EINVAL;
++			if (WARN_ON(symlen != inode->i_size))
++				goto out;
++
+ 			err = -ENOMEM;
+-			sym = kmalloc(symlen+1, GFP_NOFS);
++			sym = kstrndup(iinfo->symlink, symlen, GFP_NOFS);
+ 			if (!sym)
+ 				goto out;
+-			memcpy(sym, iinfo->symlink, symlen);
+-			sym[symlen] = 0;
+ 
+ 			spin_lock(&ci->i_ceph_lock);
+ 			if (!ci->i_symlink)
+-- 
+1.7.3.4
+

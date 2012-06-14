@@ -1,0 +1,48 @@
+From: H Hartley Sweeten <hartleys@visionengravers.com>
+Date: Fri, 23 Sep 2011 13:22:11 -0700
+Subject: [PATCH 055/199] ceph/mds_client.c: quiet sparse noise
+
+Git-commit: 7fd7d101ff50af55d6d69f4705facc00c324024e
+Patch-mainline: v3.2
+References: ceph backport
+
+Quiet the following sparse noise:
+
+warning: symbol 'get_nonsnap_parent' was not declared. Should it be static?
+warning: symbol 'done_closing_sessions' was not declared. Should it be static?
+
+Local functions don't need external visability. Make them static.
+
+Signed-off-by: H Hartley Sweeten <hsweeten@visionengravers.com>
+Cc: Sage Weil <sage@newdream.net>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/mds_client.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index b4c3efa..264ab70 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -619,7 +619,7 @@ static void __unregister_request(struct ceph_mds_client *mdsc,
+  *
+  * Called under mdsc->mutex.
+  */
+-struct dentry *get_nonsnap_parent(struct dentry *dentry)
++static struct dentry *get_nonsnap_parent(struct dentry *dentry)
+ {
+ 	/*
+ 	 * we don't need to worry about protecting the d_parent access
+@@ -3154,7 +3154,7 @@ void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
+ /*
+  * true if all sessions are closed, or we force unmount
+  */
+-bool done_closing_sessions(struct ceph_mds_client *mdsc)
++static bool done_closing_sessions(struct ceph_mds_client *mdsc)
+ {
+ 	int i, n = 0;
+ 
+-- 
+1.7.3.4
+

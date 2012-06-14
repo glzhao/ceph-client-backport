@@ -1,0 +1,33 @@
+From: Al Viro <viro@zeniv.linux.org.uk>
+Date: Thu, 23 Jun 2011 12:35:50 -0400
+Subject: [PATCH 001/199] Don't pass nameidata when calling vfs_create() from mknod()
+
+Git-commit: 554a8b9f54cd7ca2b89f5dc227df08be082fae0d
+Patch-mainline: v3.1
+References: ceph backport
+
+All instances can cope with that now (and ceph one actually
+starts working properly).
+
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/namei.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/fs/namei.c b/fs/namei.c
+index 42ccb97..94fd0fa 100644
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -2411,7 +2411,7 @@ SYSCALL_DEFINE4(mknodat, int, dfd, const char __user *, filename, int, mode,
+ 		goto out_drop_write;
+ 	switch (mode & S_IFMT) {
+ 		case 0: case S_IFREG:
+-			error = vfs_create(nd.path.dentry->d_inode,dentry,mode,&nd);
++			error = vfs_create(nd.path.dentry->d_inode,dentry,mode,NULL);
+ 			break;
+ 		case S_IFCHR: case S_IFBLK:
+ 			error = vfs_mknod(nd.path.dentry->d_inode,dentry,mode,
+-- 
+1.7.3.4
+

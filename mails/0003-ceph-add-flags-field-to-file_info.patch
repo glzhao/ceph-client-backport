@@ -1,0 +1,32 @@
+From: Sage Weil <sage@newdream.net>
+Date: Tue, 26 Jul 2011 11:25:27 -0700
+Subject: [PATCH 003/199] ceph: add flags field to file_info
+
+Git-commit: 252c6728de604d6a897d85e212996811d5c8c46c
+Patch-mainline: v3.1
+References: ceph backport
+
+Reviewed-by: Yehuda Sadeh <yehuda@hq.newdream.net>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/super.h |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+index f5cabef..8febe6f 100644
+--- a/fs/ceph/super.h
++++ b/fs/ceph/super.h
+@@ -544,7 +544,8 @@ extern void ceph_reservation_status(struct ceph_fs_client *client,
+  * we keep buffered readdir results attached to file->private_data
+  */
+ struct ceph_file_info {
+-	int fmode;     /* initialized on open */
++	short fmode;     /* initialized on open */
++	short flags;     /* CEPH_F_* */
+ 
+ 	/* readdir: position within the dir */
+ 	u32 frag;
+-- 
+1.7.3.4
+

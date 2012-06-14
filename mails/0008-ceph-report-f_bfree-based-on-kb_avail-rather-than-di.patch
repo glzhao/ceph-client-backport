@@ -1,0 +1,32 @@
+From: Greg Farnum <gregory.farnum@dreamhost.com>
+Date: Tue, 26 Jul 2011 11:26:54 -0700
+Subject: [PATCH 008/199] ceph: report f_bfree based on kb_avail rather than diffing.
+
+Git-commit: 8f04d42276048b3baff5a5d8fa769f433c62b63e
+Patch-mainline: v3.1
+References: ceph backport
+
+Reviewed-by: Yehuda Sadeh <yehuda@hq.newdream.net>
+Signed-off-by: Greg Farnum <gregory.farnum@dreamhost.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/super.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+diff --git a/fs/ceph/super.c b/fs/ceph/super.c
+index f2f77fd..d4757c9 100644
+--- a/fs/ceph/super.c
++++ b/fs/ceph/super.c
+@@ -73,8 +73,7 @@ static int ceph_statfs(struct dentry *dentry, struct kstatfs *buf)
+ 	 */
+ 	buf->f_bsize = 1 << CEPH_BLOCK_SHIFT;
+ 	buf->f_blocks = le64_to_cpu(st.kb) >> (CEPH_BLOCK_SHIFT-10);
+-	buf->f_bfree = (le64_to_cpu(st.kb) - le64_to_cpu(st.kb_used)) >>
+-		(CEPH_BLOCK_SHIFT-10);
++	buf->f_bfree = le64_to_cpu(st.kb_avail) >> (CEPH_BLOCK_SHIFT-10);
+ 	buf->f_bavail = le64_to_cpu(st.kb_avail) >> (CEPH_BLOCK_SHIFT-10);
+ 
+ 	buf->f_files = le64_to_cpu(st.num_objects);
+-- 
+1.7.3.4
+
