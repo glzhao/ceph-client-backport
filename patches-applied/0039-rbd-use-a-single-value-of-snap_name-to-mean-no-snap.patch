@@ -1,0 +1,87 @@
+From: Josh Durgin <josh.durgin@dreamhost.com>
+Date: Mon, 21 Nov 2011 18:19:13 -0800
+Subject: [PATCH 39/124] rbd: use a single value of snap_name to mean no snap
+
+Git-commit: cc9d734c3d1b39c6a557673469aea26364060226
+Patch-mainline: v3.4
+References: FATE#312404
+
+There's already a constant for this anyway.
+
+Since rbd_header_set_snap() is only used to set the rbd device
+snap_name field, just do that within that function rather than
+having it take the snap_name as an argument.
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+
+v2: Changed interface rbd_header_set_snap() so it explicitly updates
+    the snap_name in the rbd_device.  Also added a BUILD_BUG_ON()
+    to verify the size of the snap_name field is sufficient for
+    SNAP_HEAD_NAME.
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ drivers/block/rbd.c |   19 +++++++++----------
+ 1 files changed, 9 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
+index dcdfe8d..d8d052d 100644
+--- a/drivers/block/rbd.c
++++ b/drivers/block/rbd.c
+@@ -553,20 +553,18 @@ static int snap_by_name(struct rbd_image_header *header, const char *snap_name,
+ 	return i;
+ }
+ 
+-static int rbd_header_set_snap(struct rbd_device *dev,
+-			       const char *snap_name,
+-			       u64 *size)
++static int rbd_header_set_snap(struct rbd_device *dev, u64 *size)
+ {
+ 	struct rbd_image_header *header = &dev->header;
+ 	struct ceph_snap_context *snapc = header->snapc;
+ 	int ret = -ENOENT;
+ 
++	BUILD_BUG_ON(sizeof (dev->snap_name) < sizeof (RBD_SNAP_HEAD_NAME));
++
+ 	down_write(&header->snap_rwsem);
+ 
+-	if (!snap_name ||
+-	    !*snap_name ||
+-	    strcmp(snap_name, "-") == 0 ||
+-	    strcmp(snap_name, RBD_SNAP_HEAD_NAME) == 0) {
++	if (!memcmp(dev->snap_name, RBD_SNAP_HEAD_NAME,
++		    sizeof (RBD_SNAP_HEAD_NAME))) {
+ 		if (header->total_snaps)
+ 			snapc->seq = header->snap_seq;
+ 		else
+@@ -576,7 +574,7 @@ static int rbd_header_set_snap(struct rbd_device *dev,
+ 		if (size)
+ 			*size = header->image_size;
+ 	} else {
+-		ret = snap_by_name(header, snap_name, &snapc->seq, size);
++		ret = snap_by_name(header, dev->snap_name, &snapc->seq, size);
+ 		if (ret < 0)
+ 			goto done;
+ 
+@@ -1729,7 +1727,7 @@ static int rbd_init_disk(struct rbd_device *rbd_dev)
+ 	if (rc)
+ 		return rc;
+ 
+-	rc = rbd_header_set_snap(rbd_dev, rbd_dev->snap_name, &total_size);
++	rc = rbd_header_set_snap(rbd_dev, &total_size);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -2215,7 +2213,8 @@ static ssize_t rbd_add(struct bus_type *bus,
+ 	}
+ 
+ 	if (rbd_dev->snap_name[0] == 0)
+-		rbd_dev->snap_name[0] = '-';
++		memcpy(rbd_dev->snap_name, RBD_SNAP_HEAD_NAME,
++			sizeof (RBD_SNAP_HEAD_NAME));
+ 
+ 	rbd_dev->obj_len = strlen(rbd_dev->obj);
+ 	snprintf(rbd_dev->obj_md_name, sizeof(rbd_dev->obj_md_name), "%s%s",
+-- 
+1.7.3.4
+

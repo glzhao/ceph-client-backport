@@ -1,0 +1,66 @@
+From: Stratos Psomadakis <psomas@grnet.gr>
+Date: Thu, 10 Nov 2011 15:45:37 +0200
+Subject: [PATCH 18/124] libceph: Allocate larger oid buffer in request msgs
+
+Git-commit: 224736d9113ab4a7cf3f05c05377492bd99b4b02
+Patch-mainline: v3.2
+References: FATE#312404
+
+ceph_osd_request struct allocates a 40-byte buffer for object names.
+RBD image names can be up to 96 chars long (100 with the .rbd suffix),
+which results in the object name for the image being truncated, and a
+subsequent map failure.
+
+Increase the oid buffer in request messages, in order to avoid the
+truncation.
+
+Signed-off-by: Stratos Psomadakis <psomas@grnet.gr>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ include/linux/ceph/osd_client.h |    8 +++++++-
+ net/ceph/osd_client.c           |    2 +-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/ceph/osd_client.h b/include/linux/ceph/osd_client.h
+index f88eacb..7c05ac2 100644
+--- a/include/linux/ceph/osd_client.h
++++ b/include/linux/ceph/osd_client.h
+@@ -10,6 +10,12 @@
+ #include "osdmap.h"
+ #include "messenger.h"
+ 
++/* 
++ * Maximum object name size 
++ * (must be at least as big as RBD_MAX_MD_NAME_LEN -- currently 100) 
++ */
++#define MAX_OBJ_NAME_SIZE 100
++
+ struct ceph_msg;
+ struct ceph_snap_context;
+ struct ceph_osd_request;
+@@ -75,7 +81,7 @@ struct ceph_osd_request {
+ 	struct inode *r_inode;         	      /* for use by callbacks */
+ 	void *r_priv;			      /* ditto */
+ 
+-	char              r_oid[40];          /* object name */
++	char              r_oid[MAX_OBJ_NAME_SIZE];          /* object name */
+ 	int               r_oid_len;
+ 	unsigned long     r_stamp;            /* send OR check time */
+ 
+diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+index 733e4600..f4f3f58 100644
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -244,7 +244,7 @@ struct ceph_osd_request *ceph_osdc_alloc_request(struct ceph_osd_client *osdc,
+ 		ceph_pagelist_init(req->r_trail);
+ 	}
+ 	/* create request message; allow space for oid */
+-	msg_size += 40;
++	msg_size += MAX_OBJ_NAME_SIZE;
+ 	if (snapc)
+ 		msg_size += sizeof(u64) * snapc->num_snaps;
+ 	if (use_mempool)
+-- 
+1.7.3.4
+

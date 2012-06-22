@@ -1,0 +1,39 @@
+From: Josh Durgin <josh.durgin@dreamhost.com>
+Date: Thu, 1 Dec 2011 15:12:03 -0800
+Subject: [PATCH 102/124] rbd: correct sysfs snap attribute documentation
+
+Git-commit: b7f6519e6bc7a0c5a9e3eadc8a2c79c0d4556050
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+Each attribute is prefixed with "snap_".
+
+Signed-off-by: Josh Durgin <josh.durgin@dreamhost.com>
+Reviewed-by: Alex Elder <elder@dreamhost.com>
+Reviewed-by: Yehuda Sadeh <yehuda@hq.newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ Documentation/ABI/testing/sysfs-bus-rbd |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-rbd b/Documentation/ABI/testing/sysfs-bus-rbd
+index dbedafb..bcd88eb 100644
+--- a/Documentation/ABI/testing/sysfs-bus-rbd
++++ b/Documentation/ABI/testing/sysfs-bus-rbd
+@@ -65,11 +65,11 @@ snap_*
+ Entries under /sys/bus/rbd/devices/<dev-id>/snap_<snap-name>
+ -------------------------------------------------------------
+ 
+-id
++snap_id
+ 
+ 	The rados internal snapshot id assigned for this snapshot
+ 
+-size
++snap_size
+ 
+ 	The size of the image when this snapshot was taken.
+ 
+-- 
+1.7.3.4
+

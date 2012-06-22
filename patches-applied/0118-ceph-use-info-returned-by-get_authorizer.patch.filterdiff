@@ -1,0 +1,103 @@
+From: Alex Elder <elder@inktank.com>
+Date: Wed, 16 May 2012 15:16:39 -0500
+Subject: [PATCH 118/124] ceph: use info returned by get_authorizer
+
+Git-commit: 8f43fb53894079bf0caab6e348ceaffe7adc651a
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+Rather than passing a bunch of arguments to be filled in with the
+content of the ceph_auth_handshake buffer now returned by the
+get_authorizer method, just use the returned information in the
+caller, and drop the unnecessary arguments.
+
+Signed-off-by: Alex Elder <elder@inktank.com>
+Reviewed-by: Sage Weil <sage@inktank.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/mds_client.c           |    9 +--------
+ include/linux/ceph/messenger.h |    4 +---
+ net/ceph/messenger.c           |   13 +++++++------
+ net/ceph/osd_client.c          |    9 +--------
+ 4 files changed, 10 insertions(+), 25 deletions(-)
+
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 67938a9..200bc87 100644
+diff --git a/include/linux/ceph/messenger.h b/include/linux/ceph/messenger.h
+index b10b55f..2521a95 100644
+--- a/include/linux/ceph/messenger.h
++++ b/include/linux/ceph/messenger.h
+@@ -27,9 +27,7 @@ struct ceph_connection_operations {
+ 	/* authorize an outgoing connection */
+ 	struct ceph_auth_handshake *(*get_authorizer) (
+ 				struct ceph_connection *con,
+-				void **buf, int *len, int *proto,
+-				void **reply_buf, int *reply_len,
+-				int force_new);
++			       int *proto, int force_new);
+ 	int (*verify_authorizer_reply) (struct ceph_connection *con, int len);
+ 	int (*invalidate_authorizer)(struct ceph_connection *con);
+ 
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index ac27a2c..6d82c1a 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -671,20 +671,21 @@ static int prepare_connect_authorizer(struct ceph_connection *con)
+ 
+ 	mutex_unlock(&con->mutex);
+ 
+-	auth_buf = NULL;
+-	auth_len = 0;
+ 	auth_protocol = CEPH_AUTH_UNKNOWN;
+-	auth = con->ops->get_authorizer(con, &auth_buf, &auth_len,
+-				&auth_protocol, &con->auth_reply_buf,
+-				&con->auth_reply_buf_len, con->auth_retry);
++	auth = con->ops->get_authorizer(con, &auth_protocol, con->auth_retry);
++
+ 	mutex_lock(&con->mutex);
+ 
+ 	if (IS_ERR(auth))
+ 		return PTR_ERR(auth);
+-
+ 	if (test_bit(CLOSED, &con->state) || test_bit(OPENING, &con->state))
+ 		return -EAGAIN;
+ 
++	auth_buf = auth->authorizer_buf;
++	auth_len = auth->authorizer_buf_len;
++	con->auth_reply_buf = auth->authorizer_reply_buf;
++	con->auth_reply_buf_len = auth->authorizer_reply_buf_len;
++
+ 	con->out_connect.authorizer_protocol = cpu_to_le32(auth_protocol);
+ 	con->out_connect.authorizer_len = cpu_to_le32(auth_len);
+ 
+diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+index fa74ae0..b7d633c 100644
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -2113,9 +2113,7 @@ static void put_osd_con(struct ceph_connection *con)
+  * managed separately.  Caller must *not* attempt to free it.
+  */
+ static struct ceph_auth_handshake *get_authorizer(struct ceph_connection *con,
+-					void **buf, int *len, int *proto,
+-					void **reply_buf, int *reply_len,
+-					int force_new)
++					int *proto, int force_new)
+ {
+ 	struct ceph_osd *o = con->private;
+ 	struct ceph_osd_client *osdc = o->o_osdc;
+@@ -2133,12 +2131,7 @@ static struct ceph_auth_handshake *get_authorizer(struct ceph_connection *con,
+ 		if (ret)
+ 			return ERR_PTR(ret);
+ 	}
+-
+ 	*proto = ac->protocol;
+-	*buf = auth->authorizer_buf;
+-	*len = auth->authorizer_buf_len;
+-	*reply_buf = auth->authorizer_reply_buf;
+-	*reply_len = auth->authorizer_reply_buf_len;
+ 
+ 	return auth;
+ }
+-- 
+1.7.3.4
+

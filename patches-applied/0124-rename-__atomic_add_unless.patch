@@ -1,0 +1,36 @@
+From: Guangliang Zhao <gzhao@suse.com>
+Subject: [PATCH 124/124] ceph-backport: rename __atomic_add_unless as atomic_add_unless
+
+References: FATE#312404
+Patch-mainline: No
+
+This patch was created because of the changes(commit is d3002b97
+4cefbb7c1e325cc296966f768ff76b06). The function(__atomic_add_unless) 
+which has be used can't be found in the SLE11SP2's kernel source, 
+but we found that __atomic_add_unless is just a renamed function 
+of atomic_add_unless in the patch(commit is f24219b4e90cf70ec4a21
+1b17fbabc725a0ddf3c), so we just need rename the function. 
+
+NOTE:
+	1) We must review this patch when the patch (f24219b4e90cf70ec
+	   4a211b17fbabc725a0ddf3c) has be merged, because the function 
+	   __atomic_add_unless and atomic_add_unless have their own 
+	   meaning after the commit.
+	2) All above commits are based on kernel mainline.
+
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+
+Index: linux-3.0/net/ceph/messenger.c
+===================================================================
+--- linux-3.0.orig/net/ceph/messenger.c
++++ linux-3.0/net/ceph/messenger.c
+@@ -433,7 +433,7 @@ bool ceph_con_opened(struct ceph_connect
+  */
+ struct ceph_connection *ceph_con_get(struct ceph_connection *con)
+ {
+-	int nref = __atomic_add_unless(&con->nref, 1, 0);
++	int nref = atomic_add_unless(&con->nref, 1, 0);
+ 
+ 	dout("con_get %p nref = %d -> %d\n", con, nref, nref + 1);
+ 

@@ -1,0 +1,33 @@
+From: Noah Watkins <noahwatkins@gmail.com>
+Date: Mon, 12 Sep 2011 14:51:53 -0700
+Subject: [PATCH 7/124] libceph: fix parse options memory leak
+
+Git-commit: 1cad78932a0d139dceff78e68808e160a224d57a
+Patch-mainline: v3.1
+References: FATE#312404
+
+ceph_destroy_options does not free opt->mon_addr that
+is allocated in ceph_parse_options.
+
+Signed-off-by: Noah Watkins <noahwatkins@gmail.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/ceph_common.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/net/ceph/ceph_common.c b/net/ceph/ceph_common.c
+index 132963a..2883ea0 100644
+--- a/net/ceph/ceph_common.c
++++ b/net/ceph/ceph_common.c
+@@ -232,6 +232,7 @@ void ceph_destroy_options(struct ceph_options *opt)
+ 		ceph_crypto_key_destroy(opt->key);
+ 		kfree(opt->key);
+ 	}
++	kfree(opt->mon_addr);
+ 	kfree(opt);
+ }
+ EXPORT_SYMBOL(ceph_destroy_options);
+-- 
+1.7.3.4
+

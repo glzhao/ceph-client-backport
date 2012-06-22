@@ -1,0 +1,39 @@
+From: Thomas Meyer <thomas@m3y3r.de>
+Date: Thu, 10 Nov 2011 19:45:21 +0100
+Subject: [PATCH 22/124] ceph: Use kmemdup rather than duplicating its implementation
+
+Git-commit: 186482560f660b8dbf77ee43aa6489cb45d342cd
+Patch-mainline: v3.3
+References: FATE#312404
+
+Use kmemdup rather than duplicating its implementation
+
+The semantic patch that makes this change is available
+in scripts/coccinelle/api/memdup.cocci.
+
+Signed-off-by: Thomas Meyer <thomas@m3y3r.de>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/crypto.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+diff --git a/net/ceph/crypto.c b/net/ceph/crypto.c
+index 85f3bc0..b780cb7 100644
+--- a/net/ceph/crypto.c
++++ b/net/ceph/crypto.c
+@@ -15,10 +15,9 @@ int ceph_crypto_key_clone(struct ceph_crypto_key *dst,
+ 			  const struct ceph_crypto_key *src)
+ {
+ 	memcpy(dst, src, sizeof(struct ceph_crypto_key));
+-	dst->key = kmalloc(src->len, GFP_NOFS);
++	dst->key = kmemdup(src->key, src->len, GFP_NOFS);
+ 	if (!dst->key)
+ 		return -ENOMEM;
+-	memcpy(dst->key, src->key, src->len);
+ 	return 0;
+ }
+ 
+-- 
+1.7.3.4
+

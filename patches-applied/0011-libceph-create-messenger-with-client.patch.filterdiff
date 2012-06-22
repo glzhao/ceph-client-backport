@@ -1,0 +1,148 @@
+From: Sage Weil <sage@newdream.net>
+Date: Tue, 9 Aug 2011 09:41:59 -0700
+Subject: [PATCH 11/124] libceph: create messenger with client
+
+Git-commit: 6ab00d465a1c8c02c2216f8220727282f3aa50b5
+Patch-mainline: v3.2
+References: FATE#312404
+
+This simplifies the init/shutdown paths, and makes client->msgr available
+during the rest of the setup process.
+
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ drivers/block/rbd.c          |    2 +-
+ fs/ceph/super.c              |    9 +++++--
+ include/linux/ceph/libceph.h |    4 ++-
+ net/ceph/ceph_common.c       |   47 +++++++++++++++++++++--------------------
+ 4 files changed, 34 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
+index 15f65b5..0b3c566 100644
+--- a/drivers/block/rbd.c
++++ b/drivers/block/rbd.c
+@@ -260,7 +260,7 @@ static struct rbd_client *rbd_client_create(struct ceph_options *opt,
+ 	kref_init(&rbdc->kref);
+ 	INIT_LIST_HEAD(&rbdc->node);
+ 
+-	rbdc->client = ceph_create_client(opt, rbdc);
++	rbdc->client = ceph_create_client(opt, rbdc, 0, 0);
+ 	if (IS_ERR(rbdc->client))
+ 		goto out_rbdc;
+ 	opt = NULL; /* Now rbdc->client is responsible for opt */
+diff --git a/fs/ceph/super.c b/fs/ceph/super.c
+index 387addb..f90dc0b 100644
+diff --git a/include/linux/ceph/libceph.h b/include/linux/ceph/libceph.h
+index 5637551..95bd850 100644
+--- a/include/linux/ceph/libceph.h
++++ b/include/linux/ceph/libceph.h
+@@ -215,7 +215,9 @@ extern void ceph_destroy_options(struct ceph_options *opt);
+ extern int ceph_compare_options(struct ceph_options *new_opt,
+ 				struct ceph_client *client);
+ extern struct ceph_client *ceph_create_client(struct ceph_options *opt,
+-					      void *private);
++					      void *private,
++					      unsigned supported_features,
++					      unsigned required_features);
+ extern u64 ceph_client_id(struct ceph_client *client);
+ extern void ceph_destroy_client(struct ceph_client *client);
+ extern int __ceph_open_session(struct ceph_client *client,
+diff --git a/net/ceph/ceph_common.c b/net/ceph/ceph_common.c
+index 2883ea0..97f70e5 100644
+--- a/net/ceph/ceph_common.c
++++ b/net/ceph/ceph_common.c
+@@ -432,9 +432,12 @@ EXPORT_SYMBOL(ceph_client_id);
+ /*
+  * create a fresh client instance
+  */
+-struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private)
++struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private,
++				       unsigned supported_features,
++				       unsigned required_features)
+ {
+ 	struct ceph_client *client;
++	struct ceph_entity_addr *myaddr = NULL;
+ 	int err = -ENOMEM;
+ 
+ 	client = kzalloc(sizeof(*client), GFP_KERNEL);
+@@ -449,15 +452,27 @@ struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private)
+ 	client->auth_err = 0;
+ 
+ 	client->extra_mon_dispatch = NULL;
+-	client->supported_features = CEPH_FEATURE_SUPPORTED_DEFAULT;
+-	client->required_features = CEPH_FEATURE_REQUIRED_DEFAULT;
+-
+-	client->msgr = NULL;
++	client->supported_features = CEPH_FEATURE_SUPPORTED_DEFAULT |
++		supported_features;
++	client->required_features = CEPH_FEATURE_REQUIRED_DEFAULT |
++		required_features;
++
++	/* msgr */
++	if (ceph_test_opt(client, MYIP))
++		myaddr = &client->options->my_addr;
++	client->msgr = ceph_messenger_create(myaddr,
++					     client->supported_features,
++					     client->required_features);
++	if (IS_ERR(client->msgr)) {
++		err = PTR_ERR(client->msgr);
++		goto fail;
++	}
++	client->msgr->nocrc = ceph_test_opt(client, NOCRC);
+ 
+ 	/* subsystems */
+ 	err = ceph_monc_init(&client->monc, client);
+ 	if (err < 0)
+-		goto fail;
++		goto fail_msgr;
+ 	err = ceph_osdc_init(&client->osdc, client);
+ 	if (err < 0)
+ 		goto fail_monc;
+@@ -466,6 +481,8 @@ struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private)
+ 
+ fail_monc:
+ 	ceph_monc_stop(&client->monc);
++fail_msgr:
++	ceph_messenger_destroy(client->msgr);
+ fail:
+ 	kfree(client);
+ 	return ERR_PTR(err);
+@@ -490,8 +507,7 @@ void ceph_destroy_client(struct ceph_client *client)
+ 
+ 	ceph_debugfs_client_cleanup(client);
+ 
+-	if (client->msgr)
+-		ceph_messenger_destroy(client->msgr);
++	ceph_messenger_destroy(client->msgr);
+ 
+ 	ceph_destroy_options(client->options);
+ 
+@@ -514,24 +530,9 @@ static int have_mon_and_osd_map(struct ceph_client *client)
+  */
+ int __ceph_open_session(struct ceph_client *client, unsigned long started)
+ {
+-	struct ceph_entity_addr *myaddr = NULL;
+ 	int err;
+ 	unsigned long timeout = client->options->mount_timeout * HZ;
+ 
+-	/* initialize the messenger */
+-	if (client->msgr == NULL) {
+-		if (ceph_test_opt(client, MYIP))
+-			myaddr = &client->options->my_addr;
+-		client->msgr = ceph_messenger_create(myaddr,
+-					client->supported_features,
+-					client->required_features);
+-		if (IS_ERR(client->msgr)) {
+-			client->msgr = NULL;
+-			return PTR_ERR(client->msgr);
+-		}
+-		client->msgr->nocrc = ceph_test_opt(client, NOCRC);
+-	}
+-
+ 	/* open session, and wait for mon and osd maps */
+ 	err = ceph_monc_open_session(&client->monc);
+ 	if (err < 0)
+-- 
+1.7.3.4
+

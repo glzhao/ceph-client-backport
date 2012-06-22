@@ -1,0 +1,66 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Wed, 7 Mar 2012 11:40:08 -0600
+Subject: [PATCH 76/124] libceph: use kernel_sendpage() for sending zeroes
+
+Git-commit: 31739139f3ed7be802dd9019ec8d8cc910e3d241
+Patch-mainline: v3.4
+References: FATE#312404
+
+If a message queued for send gets revoked, zeroes are sent over the
+wire instead of any unsent data.  This is done by constructing a
+message and passing it to kernel_sendmsg() via ceph_tcp_sendmsg().
+
+Since we are already working with a page in this case we can use
+the sendpage interface instead.  Create a new ceph_tcp_sendpage()
+helper that sets up flags to match the way ceph_tcp_sendmsg()
+does now.
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Reviewed-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/messenger.c |   20 +++++++++++++++-----
+ 1 files changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index 589b768..9207a8c 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -321,6 +321,19 @@ static int ceph_tcp_sendmsg(struct socket *sock, struct kvec *iov,
+ 	return r;
+ }
+ 
++static int ceph_tcp_sendpage(struct socket *sock, struct page *page,
++		     int offset, size_t size, int more)
++{
++	int flags = MSG_DONTWAIT | MSG_NOSIGNAL | (more ? MSG_MORE : MSG_EOR);
++	int ret;
++
++	ret = kernel_sendpage(sock, page, offset, size, flags);
++	if (ret == -EAGAIN)
++		ret = 0;
++
++	return ret;
++}
++
+ 
+ /*
+  * Shutdown/close the socket for the given connection.
+@@ -944,12 +957,9 @@ static int write_partial_skip(struct ceph_connection *con)
+ 	int ret;
+ 
+ 	while (con->out_skip > 0) {
+-		struct kvec iov = {
+-			.iov_base = zero_page_address,
+-			.iov_len = min(con->out_skip, (int)PAGE_CACHE_SIZE)
+-		};
++		size_t size = min(con->out_skip, (int) PAGE_CACHE_SIZE);
+ 
+-		ret = ceph_tcp_sendmsg(con->sock, &iov, 1, iov.iov_len, 1);
++		ret = ceph_tcp_sendpage(con->sock, zero_page, 0, size, 1);
+ 		if (ret <= 0)
+ 			goto out;
+ 		con->out_skip -= ret;
+-- 
+1.7.3.4
+

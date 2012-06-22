@@ -1,0 +1,75 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Wed, 15 Feb 2012 07:43:54 -0600
+Subject: [PATCH 72/124] libceph: do crc calculations outside loop
+
+Git-commit: fe3ad593e2c34457ffa6233014ab19f4d36f85f2
+Patch-mainline: v3.4
+References: FATE#312404
+
+Move blocks of code out of loops in read_partial_message_section()
+and read_partial_message().  They were only was getting called at
+the end of the last iteration of the loop anyway.
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/messenger.c |   26 ++++++++++++--------------
+ 1 files changed, 12 insertions(+), 14 deletions(-)
+
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index 7ec6a22..575511a 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -1544,10 +1544,9 @@ static int read_partial_message_section(struct ceph_connection *con,
+ 		if (ret <= 0)
+ 			return ret;
+ 		section->iov_len += ret;
+-		if (section->iov_len == sec_len)
+-			*crc = crc32c(0, section->iov_base,
+-				      section->iov_len);
+ 	}
++	if (section->iov_len == sec_len)
++		*crc = crc32c(0, section->iov_base, section->iov_len);
+ 
+ 	return 1;
+ }
+@@ -1638,6 +1637,7 @@ static int read_partial_message(struct ceph_connection *con)
+ 	bool do_datacrc = con->msgr->nocrc;
+ 	int skip;
+ 	u64 seq;
++	u32 crc;
+ 
+ 	dout("read_partial_message con %p msg %p\n", con, m);
+ 
+@@ -1650,18 +1650,16 @@ static int read_partial_message(struct ceph_connection *con)
+ 		if (ret <= 0)
+ 			return ret;
+ 		con->in_base_pos += ret;
+-		if (con->in_base_pos == sizeof(con->in_hdr)) {
+-			u32 crc = crc32c(0, &con->in_hdr,
+-					offsetof(struct ceph_msg_header, crc));
+-
+-			if (cpu_to_le32(crc) != con->in_hdr.crc) {
+-				pr_err("read_partial_message bad hdr "
+-				       " crc %u != expected %u\n",
+-				       crc, con->in_hdr.crc);
+-				return -EBADMSG;
+-			}
+-		}
+ 	}
++
++	crc = crc32c(0, &con->in_hdr, offsetof(struct ceph_msg_header, crc));
++	if (cpu_to_le32(crc) != con->in_hdr.crc) {
++		pr_err("read_partial_message bad hdr "
++		       " crc %u != expected %u\n",
++		       crc, con->in_hdr.crc);
++		return -EBADMSG;
++	}
++
+ 	front_len = le32_to_cpu(con->in_hdr.front_len);
+ 	if (front_len > CEPH_MSG_MAX_FRONT_LEN)
+ 		return -EIO;
+-- 
+1.7.3.4
+

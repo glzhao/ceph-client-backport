@@ -1,0 +1,46 @@
+From: Sage Weil <sage@inktank.com>
+Date: Wed, 16 May 2012 15:16:38 -0500
+Subject: [PATCH 122/124] libceph: avoid unregistering osd request when not registered
+
+Git-commit: 35f9f8a09e1e88e31bd34a1e645ca0e5f070dd5c
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+There is a race between two __unregister_request() callers: the
+reply path and the ceph_osdc_wait_request().  If we get a reply
+*and* the timeout expires at roughly the same time, both callers
+will try to unregister the request, and the second one will do bad
+things.
+
+Simply check if the request is still already unregistered; if so,
+return immediately and do nothing.
+
+Fixes http://tracker.newdream.net/issues/2420
+
+Signed-off-by: Sage Weil <sage@inktank.com>
+Reviewed-by: Alex Elder <elder@inktank.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/osd_client.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+index b7d633c..b098e7b 100644
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -841,6 +841,12 @@ static void register_request(struct ceph_osd_client *osdc,
+ static void __unregister_request(struct ceph_osd_client *osdc,
+ 				 struct ceph_osd_request *req)
+ {
++	if (RB_EMPTY_NODE(&req->r_node)) {
++		dout("__unregister_request %p tid %lld not registered\n",
++			req, req->r_tid);
++		return;
++	}
++
+ 	dout("__unregister_request %p tid %lld\n", req, req->r_tid);
+ 	rb_erase(&req->r_node, &osdc->requests);
+ 	osdc->num_requests--;
+-- 
+1.7.3.4
+

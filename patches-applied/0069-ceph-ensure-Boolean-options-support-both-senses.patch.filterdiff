@@ -1,0 +1,70 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Wed, 15 Feb 2012 07:43:54 -0600
+Subject: [PATCH 69/124] ceph: ensure Boolean options support both senses
+
+Git-commit: cffaba15cd95d4a16eb5a6aa5c22a79f67d555ab
+Patch-mainline: v3.4
+References: FATE#312404
+
+Many ceph-related Boolean options offer the ability to both enable
+and disable a feature.  For all those that don't offer this, add
+a new option so that they do.
+
+Note that ceph_show_options()--which reports mount options currently
+in effect--only reports the option if it is different from the
+default value.
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/super.c        |   10 ++++++++++
+ net/ceph/ceph_common.c |   10 ++++++++++
+ 2 files changed, 20 insertions(+), 0 deletions(-)
+
+diff --git a/fs/ceph/super.c b/fs/ceph/super.c
+index 4fab1fd..3663cf0 100644
+diff --git a/net/ceph/ceph_common.c b/net/ceph/ceph_common.c
+index 621c322..cc91319 100644
+--- a/net/ceph/ceph_common.c
++++ b/net/ceph/ceph_common.c
+@@ -201,7 +201,9 @@ enum {
+ 	Opt_ip,
+ 	Opt_last_string,
+ 	/* string args above */
++	Opt_share,
+ 	Opt_noshare,
++	Opt_crc,
+ 	Opt_nocrc,
+ };
+ 
+@@ -217,7 +219,9 @@ static match_table_t opt_tokens = {
+ 	{Opt_key, "key=%s"},
+ 	{Opt_ip, "ip=%s"},
+ 	/* string args above */
++	{Opt_share, "share"},
+ 	{Opt_noshare, "noshare"},
++	{Opt_crc, "crc"},
+ 	{Opt_nocrc, "nocrc"},
+ 	{-1, NULL}
+ };
+@@ -399,10 +403,16 @@ ceph_parse_options(char *options, const char *dev_name,
+ 			opt->mount_timeout = intval;
+ 			break;
+ 
++		case Opt_share:
++			opt->flags &= ~CEPH_OPT_NOSHARE;
++			break;
+ 		case Opt_noshare:
+ 			opt->flags |= CEPH_OPT_NOSHARE;
+ 			break;
+ 
++		case Opt_crc:
++			opt->flags &= ~CEPH_OPT_NOCRC;
++			break;
+ 		case Opt_nocrc:
+ 			opt->flags |= CEPH_OPT_NOCRC;
+ 			break;
+-- 
+1.7.3.4
+

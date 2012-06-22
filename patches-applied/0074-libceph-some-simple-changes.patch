@@ -1,0 +1,63 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Wed, 15 Feb 2012 07:43:55 -0600
+Subject: [PATCH 74/124] libceph: some simple changes
+
+Git-commit: 84495f496170a73ed79667b7fbf91947b7f47c87
+Patch-mainline: v3.4
+References: FATE#312404
+
+Nothing too big here.
+    - define the size of the buffer used for consuming ignored
+      incoming data using a symbolic constant
+    - simplify the condition determining whether to unmap the page
+      in write_partial_msg_pages(): do it for crc but not if the
+      page is the zero page
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/messenger.c |   13 +++++++++----
+ 1 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index e8f236e..1a22975 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -38,6 +38,11 @@ static char tag_keepalive = CEPH_MSGR_TAG_KEEPALIVE;
+ static struct lock_class_key socket_class;
+ #endif
+ 
++/*
++ * When skipping (ignoring) a block of input we read it into a "skip
++ * buffer," which is this many bytes in size.
++ */
++#define SKIP_BUF_SIZE	1024
+ 
+ static void queue_con(struct ceph_connection *con);
+ static void con_work(struct work_struct *);
+@@ -892,8 +897,7 @@ static int write_partial_msg_pages(struct ceph_connection *con)
+ 				      MSG_DONTWAIT | MSG_NOSIGNAL |
+ 				      MSG_MORE);
+ 
+-		if (do_crc &&
+-		    (msg->pages || msg->pagelist || msg->bio || in_trail))
++		if (do_crc && kaddr != zero_page_address)
+ 			kunmap(page);
+ 
+ 		if (ret == -EAGAIN)
+@@ -1982,8 +1986,9 @@ more:
+ 		 *
+ 		 * FIXME: there must be a better way to do this!
+ 		 */
+-		static char buf[1024];
+-		int skip = min(1024, -con->in_base_pos);
++		static char buf[SKIP_BUF_SIZE];
++		int skip = min((int) sizeof (buf), -con->in_base_pos);
++
+ 		dout("skipping %d / %d bytes\n", skip, -con->in_base_pos);
+ 		ret = ceph_tcp_recvmsg(con->sock, buf, skip);
+ 		if (ret <= 0)
+-- 
+1.7.3.4
+

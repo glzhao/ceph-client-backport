@@ -1,0 +1,51 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Sun, 29 Jan 2012 13:57:44 -0600
+Subject: [PATCH 46/124] rbd: move ctl_mutex lock inside rbd_get_client()
+
+Git-commit: d97081b0c7bdb55371994cc6690217bf393eb63e
+Patch-mainline: v3.4
+References: FATE#312404
+
+Since rbd_get_client() is only called in one place, move the
+acquisition of the mutex around that call inside that function.
+
+Furthermore, within rbd_get_client(), it appears the mutex only
+needs to be held while calling rbd_client_create().  (Moving
+the lock inside that function will wait for the next patch.)
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ drivers/block/rbd.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
+index bccd350..7f60ff2 100644
+--- a/drivers/block/rbd.c
++++ b/drivers/block/rbd.c
+@@ -396,7 +396,10 @@ static int rbd_get_client(struct rbd_device *rbd_dev, const char *mon_addr,
+ 	}
+ 	spin_unlock(&node_lock);
+ 
++	mutex_lock_nested(&ctl_mutex, SINGLE_DEPTH_NESTING);
+ 	rbdc = rbd_client_create(opt, rbd_opts);
++	mutex_unlock(&ctl_mutex);
++
+ 	if (IS_ERR(rbdc)) {
+ 		ret = PTR_ERR(rbdc);
+ 		goto done_err;
+@@ -2276,10 +2279,7 @@ static ssize_t rbd_add(struct bus_type *bus,
+ 	/* initialize rest of new object */
+ 	snprintf(rbd_dev->name, DEV_NAME_LEN, DRV_NAME "%d", rbd_dev->id);
+ 
+-	mutex_lock_nested(&ctl_mutex, SINGLE_DEPTH_NESTING);
+ 	rc = rbd_get_client(rbd_dev, mon_dev_name, options);
+-	mutex_unlock(&ctl_mutex);
+-
+ 	if (rc < 0)
+ 		goto err_out_slot;
+ 
+-- 
+1.7.3.4
+

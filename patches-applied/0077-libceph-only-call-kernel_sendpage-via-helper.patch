@@ -1,0 +1,45 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Wed, 7 Mar 2012 11:40:08 -0600
+Subject: [PATCH 77/124] libceph: only call kernel_sendpage() via helper
+
+Git-commit: e36b13cceb46136d849aeee06b4907ad3570ba78
+Patch-mainline: v3.4
+References: FATE#312404
+
+Make ceph_tcp_sendpage() be the only place kernel_sendpage() is
+used, by using this helper in write_partial_msg_pages().
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Reviewed-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/messenger.c |    8 ++------
+ 1 files changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index 9207a8c..adca1e6 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -904,17 +904,13 @@ static int write_partial_msg_pages(struct ceph_connection *con)
+ 			con->out_msg->footer.data_crc = cpu_to_le32(crc);
+ 			con->out_msg_pos.did_page_crc = true;
+ 		}
+-		ret = kernel_sendpage(con->sock, page,
++		ret = ceph_tcp_sendpage(con->sock, page,
+ 				      con->out_msg_pos.page_pos + page_shift,
+-				      len,
+-				      MSG_DONTWAIT | MSG_NOSIGNAL |
+-				      MSG_MORE);
++				      len, 1);
+ 
+ 		if (do_datacrc && kaddr != zero_page_address)
+ 			kunmap(page);
+ 
+-		if (ret == -EAGAIN)
+-			ret = 0;
+ 		if (ret <= 0)
+ 			goto out;
+ 
+-- 
+1.7.3.4
+

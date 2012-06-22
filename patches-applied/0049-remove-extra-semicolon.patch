@@ -1,0 +1,31 @@
+From: Guangliang Zhao <gzhao@suse.com>
+Subject: [PATCH 49/124] ceph-backport: remove extra semicolon
+
+References: FATE#312404
+Patch-mainline: No
+
+This a part of the patch(commit is 699324871fcc3650f2023c5e3
+6cb119a92d7894b) which is from linus' kernel tree. The patch
+can't be patched normally, and the following part is essential 
+for the next patch, so we pick up part of the origin patch, 
+and this is the new patch.
+
+NOTE:
+	All above commits are based on kernel mainline.
+
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+
+Index: linux-3.0/drivers/block/rbd.c
+===================================================================
+--- linux-3.0.orig/drivers/block/rbd.c
++++ linux-3.0/drivers/block/rbd.c
+@@ -189,7 +189,7 @@ static ssize_t rbd_snap_add(struct devic
+ 			    const char *buf,
+ 			    size_t count);
+ static void __rbd_remove_snap_dev(struct rbd_device *rbd_dev,
+-				  struct rbd_snap *snap);;
++				  struct rbd_snap *snap);
+ 
+ 
+ static struct rbd_device *dev_to_rbd(struct device *dev)

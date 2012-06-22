@@ -1,0 +1,44 @@
+From: Sage Weil <sage@inktank.com>
+Date: Mon, 21 May 2012 09:45:23 -0700
+Subject: [PATCH 123/124] libceph: fix pg_temp updates
+
+Git-commit: 6bd9adbdf9ca6a052b0b7455ac67b925eb38cfad
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+Usually, we are adding pg_temp entries or removing them.  Occasionally they
+update.  In that case, osdmap_apply_incremental() was failing because the
+rbtree entry already exists.
+
+Fix by removing the existing entry before inserting a new one.
+
+Fixes http://tracker.newdream.net/issues/2446
+
+Signed-off-by: Sage Weil <sage@inktank.com>
+Reviewed-by: Alex Elder <elder@inktank.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/osdmap.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+diff --git a/net/ceph/osdmap.c b/net/ceph/osdmap.c
+index 2592f3c..1892c52 100644
+--- a/net/ceph/osdmap.c
++++ b/net/ceph/osdmap.c
+@@ -883,8 +883,12 @@ struct ceph_osdmap *osdmap_apply_incremental(void **p, void *end,
+ 		pglen = ceph_decode_32(p);
+ 
+ 		if (pglen) {
+-			/* insert */
+ 			ceph_decode_need(p, end, pglen*sizeof(u32), bad);
++
++			/* removing existing (if any) */
++			(void) __remove_pg_mapping(&map->pg_temp, pgid);
++
++			/* insert */
+ 			pg = kmalloc(sizeof(*pg) + sizeof(u32)*pglen, GFP_NOFS);
+ 			if (!pg) {
+ 				err = -ENOMEM;
+-- 
+1.7.3.4
+

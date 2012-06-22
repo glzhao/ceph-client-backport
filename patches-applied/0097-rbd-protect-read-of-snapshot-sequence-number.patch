@@ -1,0 +1,37 @@
+From: Josh Durgin <josh.durgin@dreamhost.com>
+Date: Mon, 5 Dec 2011 10:47:13 -0800
+Subject: [PATCH 97/124] rbd: protect read of snapshot sequence number
+
+Git-commit: 403f24d3d51760a8b9368d595fa5f48c309f1a0f
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+This is updated whenever a snapshot is added or deleted, and the
+snapc pointer is changed with every refresh of the header.
+
+Signed-off-by: Josh Durgin <josh.durgin@dreamhost.com>
+Reviewed-by: Alex Elder <elder@dreamhost.com>
+Reviewed-by: Yehuda Sadeh <yehuda@hq.newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ drivers/block/rbd.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
+index a75fe93..5ab9f55 100644
+--- a/drivers/block/rbd.c
++++ b/drivers/block/rbd.c
+@@ -1684,7 +1684,9 @@ static int rbd_header_add_snap(struct rbd_device *dev,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	dev->header.snapc->seq =  new_snapid;
++	down_write(&dev->header_rwsem);
++	dev->header.snapc->seq = new_snapid;
++	up_write(&dev->header_rwsem);
+ 
+ 	return 0;
+ bad:
+-- 
+1.7.3.4
+

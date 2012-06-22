@@ -1,0 +1,48 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Tue, 14 Feb 2012 14:05:33 -0600
+Subject: [PATCH 65/124] libceph: make ceph_msgr_wq private
+
+Git-commit: e0f43c9419c1900e5b50de4261e9686a45a0a2b8
+Patch-mainline: v3.4
+References: FATE#312404
+
+The messenger workqueue has no need to be public.  So give it static
+scope.
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ include/linux/ceph/messenger.h |    2 --
+ net/ceph/messenger.c           |    2 +-
+ 2 files changed, 1 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/ceph/messenger.h b/include/linux/ceph/messenger.h
+index 6b5af5f..5ca0f82 100644
+--- a/include/linux/ceph/messenger.h
++++ b/include/linux/ceph/messenger.h
+@@ -14,8 +14,6 @@
+ struct ceph_msg;
+ struct ceph_connection;
+ 
+-extern struct workqueue_struct *ceph_msgr_wq;       /* receive work queue */
+-
+ /*
+  * Ceph defines these callbacks for handling connection events.
+  */
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index 04d2b97..31f59ac 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -97,7 +97,7 @@ static void encode_my_addr(struct ceph_messenger *msgr)
+ /*
+  * work queue for all reading and writing to/from the socket.
+  */
+-struct workqueue_struct *ceph_msgr_wq;
++static struct workqueue_struct *ceph_msgr_wq;
+ 
+ int ceph_msgr_init(void)
+ {
+-- 
+1.7.3.4
+

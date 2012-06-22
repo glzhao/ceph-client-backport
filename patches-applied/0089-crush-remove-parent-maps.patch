@@ -1,0 +1,114 @@
+From: Sage Weil <sage@inktank.com>
+Date: Mon, 7 May 2012 15:36:35 -0700
+Subject: [PATCH 89/124] crush: remove parent maps
+
+Git-commit: fc7c3ae5ab9246ad96aab4d0d57f67e9255cfb56
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+These were used for the ill-fated forcefeed feature.  Remove them.
+
+Reflects ceph.git commit ebdf80edfecfbd5a842b71fbe5732857994380c1.
+
+Reviewed-by: Alex Elder <elder@inktank.com>
+Signed-off-by: Sage Weil <sage@inktank.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ include/linux/crush/crush.h |   11 -----------
+ net/ceph/crush/crush.c      |   25 -------------------------
+ net/ceph/osdmap.c           |    7 -------
+ 3 files changed, 0 insertions(+), 43 deletions(-)
+
+diff --git a/include/linux/crush/crush.h b/include/linux/crush/crush.h
+index 3f50369..158a4d2 100644
+--- a/include/linux/crush/crush.h
++++ b/include/linux/crush/crush.h
+@@ -151,16 +151,6 @@ struct crush_map {
+ 	struct crush_bucket **buckets;
+ 	struct crush_rule **rules;
+ 
+-	/*
+-	 * Parent pointers to identify the parent bucket a device or
+-	 * bucket in the hierarchy.  If an item appears more than
+-	 * once, this is the _last_ time it appeared (where buckets
+-	 * are processed in bucket id order, from -1 on down to
+-	 * -max_buckets.
+-	 */
+-	__u32 *bucket_parents;
+-	__u32 *device_parents;
+-
+ 	__s32 max_buckets;
+ 	__u32 max_rules;
+ 	__s32 max_devices;
+@@ -169,7 +159,6 @@ struct crush_map {
+ 
+ /* crush.c */
+ extern int crush_get_bucket_item_weight(const struct crush_bucket *b, int pos);
+-extern void crush_calc_parents(struct crush_map *map);
+ extern void crush_destroy_bucket_uniform(struct crush_bucket_uniform *b);
+ extern void crush_destroy_bucket_list(struct crush_bucket_list *b);
+ extern void crush_destroy_bucket_tree(struct crush_bucket_tree *b);
+diff --git a/net/ceph/crush/crush.c b/net/ceph/crush/crush.c
+index 8dd19a0..2160791 100644
+--- a/net/ceph/crush/crush.c
++++ b/net/ceph/crush/crush.c
+@@ -46,29 +46,6 @@ int crush_get_bucket_item_weight(const struct crush_bucket *b, int p)
+ 	return 0;
+ }
+ 
+-/**
+- * crush_calc_parents - Calculate parent vectors for the given crush map.
+- * @map: crush_map pointer
+- */
+-void crush_calc_parents(struct crush_map *map)
+-{
+-	int i, b, c;
+-
+-	for (b = 0; b < map->max_buckets; b++) {
+-		if (map->buckets[b] == NULL)
+-			continue;
+-		for (i = 0; i < map->buckets[b]->size; i++) {
+-			c = map->buckets[b]->items[i];
+-			BUG_ON(c >= map->max_devices ||
+-			       c < -map->max_buckets);
+-			if (c >= 0)
+-				map->device_parents[c] = map->buckets[b]->id;
+-			else
+-				map->bucket_parents[-1-c] = map->buckets[b]->id;
+-		}
+-	}
+-}
+-
+ void crush_destroy_bucket_uniform(struct crush_bucket_uniform *b)
+ {
+ 	kfree(b->h.perm);
+@@ -143,8 +120,6 @@ void crush_destroy(struct crush_map *map)
+ 		kfree(map->rules);
+ 	}
+ 
+-	kfree(map->bucket_parents);
+-	kfree(map->device_parents);
+ 	kfree(map);
+ }
+ 
+diff --git a/net/ceph/osdmap.c b/net/ceph/osdmap.c
+index 9dda36f..dac448b 100644
+--- a/net/ceph/osdmap.c
++++ b/net/ceph/osdmap.c
+@@ -161,13 +161,6 @@ static struct crush_map *crush_decode(void *pbyval, void *end)
+ 	c->max_rules = ceph_decode_32(p);
+ 	c->max_devices = ceph_decode_32(p);
+ 
+-	c->device_parents = kcalloc(c->max_devices, sizeof(u32), GFP_NOFS);
+-	if (c->device_parents == NULL)
+-		goto badmem;
+-	c->bucket_parents = kcalloc(c->max_buckets, sizeof(u32), GFP_NOFS);
+-	if (c->bucket_parents == NULL)
+-		goto badmem;
+-
+ 	c->buckets = kcalloc(c->max_buckets, sizeof(*c->buckets), GFP_NOFS);
+ 	if (c->buckets == NULL)
+ 		goto badmem;
+-- 
+1.7.3.4
+

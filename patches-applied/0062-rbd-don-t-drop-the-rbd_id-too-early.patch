@@ -1,0 +1,91 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Wed, 8 Feb 2012 16:11:14 -0600
+Subject: [PATCH 62/124] rbd: don't drop the rbd_id too early
+
+Git-commit: 32eec68d2f233e8a6ae1cd326022f6862e2b9ce3
+Patch-mainline: v3.4
+References: FATE#312404
+
+Currently an rbd device's id is released when it is removed, but it
+is done before the code is run to clean up sysfs-related files (such
+as /sys/bus/rbd/devices/1).
+
+It's possible that an rbd is still in use after the rbd_remove()
+call has been made.  It's essentially the same as an active inode
+that stays around after it has been removed--until its final close
+operation.  This means that the id shows up as free for reuse at a
+time it should not be.
+
+The effect of this was seen by Jens Rehpoehler, who:
+    - had a filesystem mounted on an rbd device
+    - unmapped that filesystem (without unmounting)
+    - found that the mount still worked properly
+    - but hit a panic when he attempted to re-map a new rbd device
+
+This re-map attempt found the previously-unmapped id available.
+The subsequent attempt to reuse it was met with a panic while
+attempting to (re-)install the sysfs entry for the new mapped
+device.
+
+Fix this by holding off "putting" the rbd id, until the rbd_device
+release function is called--when the last reference is finally
+dropped.
+
+Note: This fixes: http://tracker.newdream.net/issues/1907
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ drivers/block/rbd.c |   14 +++++++++-----
+ 1 files changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
+index 568fa5b..6bbd5af 100644
+--- a/drivers/block/rbd.c
++++ b/drivers/block/rbd.c
+@@ -2421,7 +2421,12 @@ static ssize_t rbd_add(struct bus_type *bus,
+ 	if (rc)
+ 		goto err_out_blkdev;
+ 
+-	/* set up and announce blkdev mapping */
++	/*
++	 * At this point cleanup in the event of an error is the job
++	 * of the sysfs code (initiated by rbd_bus_del_dev()).
++	 *
++	 * Set up and announce blkdev mapping.
++	 */
+ 	rc = rbd_init_disk(rbd_dev);
+ 	if (rc)
+ 		goto err_out_bus;
+@@ -2433,8 +2438,6 @@ static ssize_t rbd_add(struct bus_type *bus,
+ 	return count;
+ 
+ err_out_bus:
+-	rbd_id_put(rbd_dev);
+-
+ 	/* this will also clean up rest of rbd_dev stuff */
+ 
+ 	rbd_bus_del_dev(rbd_dev);
+@@ -2492,6 +2495,9 @@ static void rbd_dev_release(struct device *dev)
+ 	/* clean up and free blkdev */
+ 	rbd_free_disk(rbd_dev);
+ 	unregister_blkdev(rbd_dev->major, rbd_dev->name);
++
++	/* done with the id, and with the rbd_dev */
++	rbd_id_put(rbd_dev);
+ 	kfree(rbd_dev);
+ 
+ 	/* release module ref */
+@@ -2524,8 +2530,6 @@ static ssize_t rbd_remove(struct bus_type *bus,
+ 		goto done;
+ 	}
+ 
+-	rbd_id_put(rbd_dev);
+-
+ 	__rbd_remove_all_snaps(rbd_dev);
+ 	rbd_bus_del_dev(rbd_dev);
+ 
+-- 
+1.7.3.4
+

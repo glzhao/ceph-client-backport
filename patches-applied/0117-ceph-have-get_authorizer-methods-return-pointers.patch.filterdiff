@@ -1,0 +1,127 @@
+From: Alex Elder <elder@inktank.com>
+Date: Wed, 16 May 2012 15:16:39 -0500
+Subject: [PATCH 117/124] ceph: have get_authorizer methods return pointers
+
+Git-commit: a3530df33eb91d787d08c7383a0a9982690e42d0
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+Have the get_authorizer auth_client method return a ceph_auth
+pointer rather than an integer, pointer-encoding any returned
+error value.  This is to pave the way for making use of the
+returned value in an upcoming patch.
+
+Signed-off-by: Alex Elder <elder@inktank.com>
+Reviewed-by: Sage Weil <sage@inktank.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/mds_client.c           |   20 +++++++++++++-------
+ include/linux/ceph/messenger.h |    8 +++++---
+ net/ceph/messenger.c           |    8 ++++----
+ net/ceph/osd_client.c          |   19 ++++++++++++-------
+ 4 files changed, 34 insertions(+), 21 deletions(-)
+
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 4622817..67938a9 100644
+diff --git a/include/linux/ceph/messenger.h b/include/linux/ceph/messenger.h
+index 3bff047..b10b55f 100644
+--- a/include/linux/ceph/messenger.h
++++ b/include/linux/ceph/messenger.h
+@@ -25,9 +25,11 @@ struct ceph_connection_operations {
+ 	void (*dispatch) (struct ceph_connection *con, struct ceph_msg *m);
+ 
+ 	/* authorize an outgoing connection */
+-	int (*get_authorizer) (struct ceph_connection *con,
+-			       void **buf, int *len, int *proto,
+-			       void **reply_buf, int *reply_len, int force_new);
++	struct ceph_auth_handshake *(*get_authorizer) (
++				struct ceph_connection *con,
++				void **buf, int *len, int *proto,
++				void **reply_buf, int *reply_len,
++				int force_new);
+ 	int (*verify_authorizer_reply) (struct ceph_connection *con, int len);
+ 	int (*invalidate_authorizer)(struct ceph_connection *con);
+ 
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index e0532d5..ac27a2c 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -658,7 +658,7 @@ static int prepare_connect_authorizer(struct ceph_connection *con)
+ 	void *auth_buf;
+ 	int auth_len;
+ 	int auth_protocol;
+-	int ret;
++	struct ceph_auth_handshake *auth;
+ 
+ 	if (!con->ops->get_authorizer) {
+ 		con->out_connect.authorizer_protocol = CEPH_AUTH_UNKNOWN;
+@@ -674,13 +674,13 @@ static int prepare_connect_authorizer(struct ceph_connection *con)
+ 	auth_buf = NULL;
+ 	auth_len = 0;
+ 	auth_protocol = CEPH_AUTH_UNKNOWN;
+-	ret = con->ops->get_authorizer(con, &auth_buf, &auth_len,
++	auth = con->ops->get_authorizer(con, &auth_buf, &auth_len,
+ 				&auth_protocol, &con->auth_reply_buf,
+ 				&con->auth_reply_buf_len, con->auth_retry);
+ 	mutex_lock(&con->mutex);
+ 
+-	if (ret)
+-		return ret;
++	if (IS_ERR(auth))
++		return PTR_ERR(auth);
+ 
+ 	if (test_bit(CLOSED, &con->state) || test_bit(OPENING, &con->state))
+ 		return -EAGAIN;
+diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+index f640bdf..fa74ae0 100644
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -2108,15 +2108,19 @@ static void put_osd_con(struct ceph_connection *con)
+ /*
+  * authentication
+  */
+-static int get_authorizer(struct ceph_connection *con,
+-			  void **buf, int *len, int *proto,
+-			  void **reply_buf, int *reply_len, int force_new)
++/*
++ * Note: returned pointer is the address of a structure that's
++ * managed separately.  Caller must *not* attempt to free it.
++ */
++static struct ceph_auth_handshake *get_authorizer(struct ceph_connection *con,
++					void **buf, int *len, int *proto,
++					void **reply_buf, int *reply_len,
++					int force_new)
+ {
+ 	struct ceph_osd *o = con->private;
+ 	struct ceph_osd_client *osdc = o->o_osdc;
+ 	struct ceph_auth_client *ac = osdc->client->monc.auth;
+ 	struct ceph_auth_handshake *auth = &o->o_auth;
+-	int ret = 0;
+ 
+ 	if (force_new && auth->authorizer) {
+ 		if (ac->ops && ac->ops->destroy_authorizer)
+@@ -2124,9 +2128,10 @@ static int get_authorizer(struct ceph_connection *con,
+ 		auth->authorizer = NULL;
+ 	}
+ 	if (!auth->authorizer && ac->ops && ac->ops->create_authorizer) {
+-		ret = ac->ops->create_authorizer(ac, CEPH_ENTITY_TYPE_OSD, auth);
++		int ret = ac->ops->create_authorizer(ac, CEPH_ENTITY_TYPE_OSD,
++							auth);
+ 		if (ret)
+-			return ret;
++			return ERR_PTR(ret);
+ 	}
+ 
+ 	*proto = ac->protocol;
+@@ -2135,7 +2140,7 @@ static int get_authorizer(struct ceph_connection *con,
+ 	*reply_buf = auth->authorizer_reply_buf;
+ 	*reply_len = auth->authorizer_reply_buf_len;
+ 
+-	return 0;
++	return auth;
+ }
+ 
+ 
+-- 
+1.7.3.4
+

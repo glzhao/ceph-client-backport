@@ -1,0 +1,36 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Wed, 11 Jan 2012 19:42:15 -0800
+Subject: [PATCH 25/124] rbd: initialize snap_rwsem in rbd_add()
+
+Git-commit: 0e805a1d857799352e51e8697c0b1a30aec16913
+Patch-mainline: v3.3
+References: FATE#312404
+
+New rbd device structures get initialized in rbd_add().  Many of
+the fields rely on being initially zero-filled.  However we lockdep
+was noticing that the rw_semaphore embedded in the header field
+was not getting properly initialized.  Fix that.
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ drivers/block/rbd.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
+index 148ab94..3fd31de 100644
+--- a/drivers/block/rbd.c
++++ b/drivers/block/rbd.c
+@@ -2184,6 +2184,8 @@ static ssize_t rbd_add(struct bus_type *bus,
+ 	INIT_LIST_HEAD(&rbd_dev->node);
+ 	INIT_LIST_HEAD(&rbd_dev->snaps);
+ 
++	init_rwsem(&rbd_dev->header.snap_rwsem);
++
+ 	/* generate unique id: find highest unique id, add one */
+ 	mutex_lock_nested(&ctl_mutex, SINGLE_DEPTH_NESTING);
+ 
+-- 
+1.7.3.4
+

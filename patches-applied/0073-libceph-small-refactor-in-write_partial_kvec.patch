@@ -1,0 +1,56 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Wed, 15 Feb 2012 07:43:54 -0600
+Subject: [PATCH 73/124] libceph: small refactor in write_partial_kvec()
+
+Git-commit: f42299e6c3883c69c14079b8c88fe33815b2dcc3
+Patch-mainline: v3.4
+References: FATE#312404
+
+Make a small change in the code that counts down kvecs consumed by
+a ceph_tcp_sendmsg() call.  Same functionality, just blocked out
+a little differently.
+
+Signed-off-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/messenger.c |   23 ++++++++++++-----------
+ 1 files changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index 575511a..e8f236e 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -747,17 +747,18 @@ static int write_partial_kvec(struct ceph_connection *con)
+ 		con->out_kvec_bytes -= ret;
+ 		if (con->out_kvec_bytes == 0)
+ 			break;            /* done */
+-		while (ret > 0) {
+-			if (ret >= con->out_kvec_cur->iov_len) {
+-				ret -= con->out_kvec_cur->iov_len;
+-				con->out_kvec_cur++;
+-				con->out_kvec_left--;
+-			} else {
+-				con->out_kvec_cur->iov_len -= ret;
+-				con->out_kvec_cur->iov_base += ret;
+-				ret = 0;
+-				break;
+-			}
++
++		/* account for full iov entries consumed */
++		while (ret >= con->out_kvec_cur->iov_len) {
++			BUG_ON(!con->out_kvec_left);
++			ret -= con->out_kvec_cur->iov_len;
++			con->out_kvec_cur++;
++			con->out_kvec_left--;
++		}
++		/* and for a partially-consumed entry */
++		if (ret) {
++			con->out_kvec_cur->iov_len -= ret;
++			con->out_kvec_cur->iov_base += ret;
+ 		}
+ 	}
+ 	con->out_kvec_left = 0;
+-- 
+1.7.3.4
+

@@ -1,0 +1,225 @@
+From: Sage Weil <sage@newdream.net>
+Date: Tue, 9 Aug 2011 15:03:46 -0700
+Subject: [PATCH 13/124] libceph: don't complain on msgpool alloc failures
+
+Git-commit: b61c27636fffbaf1980e675282777b9467254a40
+Patch-mainline: v3.2
+References: FATE#312404
+
+The pool allocation failures are masked by the pool; there is no need to
+spam the console about them.  (That's the whole point of having the pool
+in the first place.)
+
+Mark msg allocations whose failure is safely handled as such.
+
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ fs/ceph/caps.c                 |    2 +-
+ fs/ceph/mds_client.c           |   11 ++++++-----
+ include/linux/ceph/messenger.h |    3 ++-
+ net/ceph/messenger.c           |   15 +++++++++++----
+ net/ceph/mon_client.c          |   24 +++++++++++++++---------
+ net/ceph/msgpool.c             |    4 ++--
+ net/ceph/osd_client.c          |    8 ++++----
+ 7 files changed, 41 insertions(+), 26 deletions(-)
+
+diff --git a/fs/ceph/caps.c b/fs/ceph/caps.c
+index 8d74ad7..b8731bf 100644
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 86c59e1..1d72f15 100644
+diff --git a/include/linux/ceph/messenger.h b/include/linux/ceph/messenger.h
+index d7adf15..bbd4a4b 100644
+--- a/include/linux/ceph/messenger.h
++++ b/include/linux/ceph/messenger.h
+@@ -238,7 +238,8 @@ extern void ceph_con_keepalive(struct ceph_connection *con);
+ extern struct ceph_connection *ceph_con_get(struct ceph_connection *con);
+ extern void ceph_con_put(struct ceph_connection *con);
+ 
+-extern struct ceph_msg *ceph_msg_new(int type, int front_len, gfp_t flags);
++extern struct ceph_msg *ceph_msg_new(int type, int front_len, gfp_t flags,
++				     bool can_fail);
+ extern void ceph_msg_kfree(struct ceph_msg *m);
+ 
+ 
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index 9918e9e..2de711a 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -2281,7 +2281,8 @@ EXPORT_SYMBOL(ceph_con_keepalive);
+  * construct a new message with given type, size
+  * the new msg has a ref count of 1.
+  */
+-struct ceph_msg *ceph_msg_new(int type, int front_len, gfp_t flags)
++struct ceph_msg *ceph_msg_new(int type, int front_len, gfp_t flags,
++			      bool can_fail)
+ {
+ 	struct ceph_msg *m;
+ 
+@@ -2333,7 +2334,7 @@ struct ceph_msg *ceph_msg_new(int type, int front_len, gfp_t flags)
+ 			m->front.iov_base = kmalloc(front_len, flags);
+ 		}
+ 		if (m->front.iov_base == NULL) {
+-			pr_err("msg_new can't allocate %d bytes\n",
++			dout("ceph_msg_new can't allocate %d bytes\n",
+ 			     front_len);
+ 			goto out2;
+ 		}
+@@ -2348,7 +2349,13 @@ struct ceph_msg *ceph_msg_new(int type, int front_len, gfp_t flags)
+ out2:
+ 	ceph_msg_put(m);
+ out:
+-	pr_err("msg_new can't create type %d front %d\n", type, front_len);
++	if (!can_fail) {
++		pr_err("msg_new can't create type %d front %d\n", type,
++		       front_len);
++	} else {
++		dout("msg_new can't create type %d front %d\n", type,
++		     front_len);
++	}
+ 	return NULL;
+ }
+ EXPORT_SYMBOL(ceph_msg_new);
+@@ -2398,7 +2405,7 @@ static struct ceph_msg *ceph_alloc_msg(struct ceph_connection *con,
+ 	}
+ 	if (!msg) {
+ 		*skip = 0;
+-		msg = ceph_msg_new(type, front_len, GFP_NOFS);
++		msg = ceph_msg_new(type, front_len, GFP_NOFS, false);
+ 		if (!msg) {
+ 			pr_err("unable to allocate msg type %d len %d\n",
+ 			       type, front_len);
+diff --git a/net/ceph/mon_client.c b/net/ceph/mon_client.c
+index 55672166..af2ef30 100644
+--- a/net/ceph/mon_client.c
++++ b/net/ceph/mon_client.c
+@@ -517,10 +517,12 @@ int ceph_monc_do_statfs(struct ceph_mon_client *monc, struct ceph_statfs *buf)
+ 	init_completion(&req->completion);
+ 
+ 	err = -ENOMEM;
+-	req->request = ceph_msg_new(CEPH_MSG_STATFS, sizeof(*h), GFP_NOFS);
++	req->request = ceph_msg_new(CEPH_MSG_STATFS, sizeof(*h), GFP_NOFS,
++				    true);
+ 	if (!req->request)
+ 		goto out;
+-	req->reply = ceph_msg_new(CEPH_MSG_STATFS_REPLY, 1024, GFP_NOFS);
++	req->reply = ceph_msg_new(CEPH_MSG_STATFS_REPLY, 1024, GFP_NOFS,
++				  true);
+ 	if (!req->reply)
+ 		goto out;
+ 
+@@ -615,10 +617,12 @@ int ceph_monc_do_poolop(struct ceph_mon_client *monc, u32 op,
+ 	init_completion(&req->completion);
+ 
+ 	err = -ENOMEM;
+-	req->request = ceph_msg_new(CEPH_MSG_POOLOP, sizeof(*h), GFP_NOFS);
++	req->request = ceph_msg_new(CEPH_MSG_POOLOP, sizeof(*h), GFP_NOFS,
++				    true);
+ 	if (!req->request)
+ 		goto out;
+-	req->reply = ceph_msg_new(CEPH_MSG_POOLOP_REPLY, 1024, GFP_NOFS);
++	req->reply = ceph_msg_new(CEPH_MSG_POOLOP_REPLY, 1024, GFP_NOFS,
++				  true);
+ 	if (!req->reply)
+ 		goto out;
+ 
+@@ -765,19 +769,21 @@ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
+ 	err = -ENOMEM;
+ 	monc->m_subscribe_ack = ceph_msg_new(CEPH_MSG_MON_SUBSCRIBE_ACK,
+ 				     sizeof(struct ceph_mon_subscribe_ack),
+-				     GFP_NOFS);
++				     GFP_NOFS, true);
+ 	if (!monc->m_subscribe_ack)
+ 		goto out_con;
+ 
+-	monc->m_subscribe = ceph_msg_new(CEPH_MSG_MON_SUBSCRIBE, 96, GFP_NOFS);
++	monc->m_subscribe = ceph_msg_new(CEPH_MSG_MON_SUBSCRIBE, 96, GFP_NOFS,
++					 true);
+ 	if (!monc->m_subscribe)
+ 		goto out_subscribe_ack;
+ 
+-	monc->m_auth_reply = ceph_msg_new(CEPH_MSG_AUTH_REPLY, 4096, GFP_NOFS);
++	monc->m_auth_reply = ceph_msg_new(CEPH_MSG_AUTH_REPLY, 4096, GFP_NOFS,
++					  true);
+ 	if (!monc->m_auth_reply)
+ 		goto out_subscribe;
+ 
+-	monc->m_auth = ceph_msg_new(CEPH_MSG_AUTH, 4096, GFP_NOFS);
++	monc->m_auth = ceph_msg_new(CEPH_MSG_AUTH, 4096, GFP_NOFS, true);
+ 	monc->pending_auth = 0;
+ 	if (!monc->m_auth)
+ 		goto out_auth_reply;
+@@ -970,7 +976,7 @@ static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
+ 	case CEPH_MSG_MON_MAP:
+ 	case CEPH_MSG_MDS_MAP:
+ 	case CEPH_MSG_OSD_MAP:
+-		m = ceph_msg_new(type, front_len, GFP_NOFS);
++		m = ceph_msg_new(type, front_len, GFP_NOFS, false);
+ 		break;
+ 	}
+ 
+diff --git a/net/ceph/msgpool.c b/net/ceph/msgpool.c
+index 1f4cb30..11d5f41 100644
+--- a/net/ceph/msgpool.c
++++ b/net/ceph/msgpool.c
+@@ -12,7 +12,7 @@ static void *msgpool_alloc(gfp_t gfp_mask, void *arg)
+ 	struct ceph_msgpool *pool = arg;
+ 	struct ceph_msg *msg;
+ 
+-	msg = ceph_msg_new(0, pool->front_len, gfp_mask);
++	msg = ceph_msg_new(0, pool->front_len, gfp_mask, true);
+ 	if (!msg) {
+ 		dout("msgpool_alloc %s failed\n", pool->name);
+ 	} else {
+@@ -61,7 +61,7 @@ struct ceph_msg *ceph_msgpool_get(struct ceph_msgpool *pool,
+ 		WARN_ON(1);
+ 
+ 		/* try to alloc a fresh message */
+-		return ceph_msg_new(0, front_len, GFP_NOFS);
++		return ceph_msg_new(0, front_len, GFP_NOFS, false);
+ 	}
+ 
+ 	msg = mempool_alloc(pool->pool, GFP_NOFS);
+diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+index 88ad8a2..01ceb59 100644
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -227,7 +227,7 @@ struct ceph_osd_request *ceph_osdc_alloc_request(struct ceph_osd_client *osdc,
+ 		msg = ceph_msgpool_get(&osdc->msgpool_op_reply, 0);
+ 	else
+ 		msg = ceph_msg_new(CEPH_MSG_OSD_OPREPLY,
+-				   OSD_OPREPLY_FRONT_LEN, gfp_flags);
++				   OSD_OPREPLY_FRONT_LEN, gfp_flags, true);
+ 	if (!msg) {
+ 		ceph_osdc_put_request(req);
+ 		return NULL;
+@@ -250,7 +250,7 @@ struct ceph_osd_request *ceph_osdc_alloc_request(struct ceph_osd_client *osdc,
+ 	if (use_mempool)
+ 		msg = ceph_msgpool_get(&osdc->msgpool_op, 0);
+ 	else
+-		msg = ceph_msg_new(CEPH_MSG_OSD_OP, msg_size, gfp_flags);
++		msg = ceph_msg_new(CEPH_MSG_OSD_OP, msg_size, gfp_flags, true);
+ 	if (!msg) {
+ 		ceph_osdc_put_request(req);
+ 		return NULL;
+@@ -2032,7 +2032,7 @@ static struct ceph_msg *get_reply(struct ceph_connection *con,
+ 	if (front > req->r_reply->front.iov_len) {
+ 		pr_warning("get_reply front %d > preallocated %d\n",
+ 			   front, (int)req->r_reply->front.iov_len);
+-		m = ceph_msg_new(CEPH_MSG_OSD_OPREPLY, front, GFP_NOFS);
++		m = ceph_msg_new(CEPH_MSG_OSD_OPREPLY, front, GFP_NOFS, false);
+ 		if (!m)
+ 			goto out;
+ 		ceph_msg_put(req->r_reply);
+@@ -2080,7 +2080,7 @@ static struct ceph_msg *alloc_msg(struct ceph_connection *con,
+ 	switch (type) {
+ 	case CEPH_MSG_OSD_MAP:
+ 	case CEPH_MSG_WATCH_NOTIFY:
+-		return ceph_msg_new(type, front, GFP_NOFS);
++		return ceph_msg_new(type, front, GFP_NOFS, false);
+ 	case CEPH_MSG_OSD_OPREPLY:
+ 		return get_reply(con, hdr, skip);
+ 	default:
+-- 
+1.7.3.4
+

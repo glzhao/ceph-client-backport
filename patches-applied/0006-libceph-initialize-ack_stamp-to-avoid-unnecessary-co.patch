@@ -1,0 +1,40 @@
+From: Jim Schutt <jaschut@sandia.gov>
+Date: Fri, 16 Sep 2011 08:27:31 -0600
+Subject: [PATCH 6/124] libceph: initialize ack_stamp to avoid unnecessary connection reset
+
+Git-commit: c0d5f9db1c7d1b8a9e2f217706e8ea233bac2754
+Patch-mainline: v3.1
+References: FATE#312404
+
+Commit 4cf9d544631c recorded when an outgoing ceph message was ACKed,
+in order to avoid unnecessary connection resets when an OSD is busy.
+
+However, ack_stamp is uninitialized, so there is a window between
+when the message is sent and when it is ACKed in which handle_timeout()
+interprets the unitialized value as an expired timeout, and resets
+the connection unnecessarily.
+
+Close the window by initializing ack_stamp.
+
+Signed-off-by: Jim Schutt <jaschut@sandia.gov>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/messenger.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index c340e2e..9918e9e 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -2307,6 +2307,7 @@ struct ceph_msg *ceph_msg_new(int type, int front_len, gfp_t flags)
+ 	m->front_max = front_len;
+ 	m->front_is_vmalloc = false;
+ 	m->more_to_follow = false;
++	m->ack_stamp = 0;
+ 	m->pool = NULL;
+ 
+ 	/* middle */
+-- 
+1.7.3.4
+

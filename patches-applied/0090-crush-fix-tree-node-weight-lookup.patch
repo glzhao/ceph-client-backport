@@ -1,0 +1,52 @@
+From: Sage Weil <sage@inktank.com>
+Date: Mon, 7 May 2012 15:36:49 -0700
+Subject: [PATCH 90/124] crush: fix tree node weight lookup
+
+Git-commit: f671d4cd9b36691ac4ef42cde44c1b7a84e13631
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+Fix the node weight lookup for tree buckets by using a correct accessor.
+
+Reflects ceph.git commit d287ade5bcbdca82a3aef145b92924cf1e856733.
+
+Reviewed-by: Alex Elder <elder@inktank.com>
+Signed-off-by: Sage Weil <sage@inktank.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ include/linux/crush/crush.h |    5 +++++
+ net/ceph/crush/crush.c      |    4 +---
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/crush/crush.h b/include/linux/crush/crush.h
+index 158a4d2..7c47508 100644
+--- a/include/linux/crush/crush.h
++++ b/include/linux/crush/crush.h
+@@ -166,4 +166,9 @@ extern void crush_destroy_bucket_straw(struct crush_bucket_straw *b);
+ extern void crush_destroy_bucket(struct crush_bucket *b);
+ extern void crush_destroy(struct crush_map *map);
+ 
++static inline int crush_calc_tree_node(int i)
++{
++	return ((i+1) << 1)-1;
++}
++
+ #endif
+diff --git a/net/ceph/crush/crush.c b/net/ceph/crush/crush.c
+index 2160791..b93575f 100644
+--- a/net/ceph/crush/crush.c
++++ b/net/ceph/crush/crush.c
+@@ -37,9 +37,7 @@ int crush_get_bucket_item_weight(const struct crush_bucket *b, int p)
+ 	case CRUSH_BUCKET_LIST:
+ 		return ((struct crush_bucket_list *)b)->item_weights[p];
+ 	case CRUSH_BUCKET_TREE:
+-		if (p & 1)
+-			return ((struct crush_bucket_tree *)b)->node_weights[p];
+-		return 0;
++		return ((struct crush_bucket_tree *)b)->node_weights[crush_calc_tree_node(p)];
+ 	case CRUSH_BUCKET_STRAW:
+ 		return ((struct crush_bucket_straw *)b)->item_weights[p];
+ 	}
+-- 
+1.7.3.4
+

@@ -1,0 +1,46 @@
+From: Josh Durgin <josh.durgin@dreamhost.com>
+Date: Mon, 21 Nov 2011 18:16:52 -0800
+Subject: [PATCH 99/124] rbd: remove conditional snapid parameters
+
+Git-commit: b06e6a6be796bc365a19b0ac5176b553c13abf2f
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+The snapid parameters passed to rbd_do_op() and rbd_req_sync_op()
+are now always either a valid snapid or an explicit CEPH_NOSNAP.
+
+[elder@dreamhost.com: Rephrased the description]
+
+Signed-off-by: Josh Durgin <josh.durgin@dreamhost.com>
+Reviewed-by: Alex Elder <elder@dreamhost.com>
+Reviewed-by: Yehuda Sadeh <yehuda@hq.newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ drivers/block/rbd.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
+index c1650bd..4a0a829 100644
+--- a/drivers/block/rbd.c
++++ b/drivers/block/rbd.c
+@@ -1152,7 +1152,7 @@ static int rbd_req_read(struct request *rq,
+ 			 int coll_index)
+ {
+ 	return rbd_do_op(rq, rbd_dev, NULL,
+-			 (snapid ? snapid : CEPH_NOSNAP),
++			 snapid,
+ 			 CEPH_OSD_OP_READ,
+ 			 CEPH_OSD_FLAG_READ,
+ 			 2,
+@@ -1171,7 +1171,7 @@ static int rbd_req_sync_read(struct rbd_device *dev,
+ 			  u64 *ver)
+ {
+ 	return rbd_req_sync_op(dev, NULL,
+-			       (snapid ? snapid : CEPH_NOSNAP),
++			       snapid,
+ 			       CEPH_OSD_OP_READ,
+ 			       CEPH_OSD_FLAG_READ,
+ 			       NULL,
+-- 
+1.7.3.4
+

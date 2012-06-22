@@ -1,0 +1,52 @@
+From: Xi Wang <xi.wang@gmail.com>
+Date: Fri, 20 Apr 2012 15:49:44 -0500
+Subject: [PATCH 94/124] ceph: fix bounds check in ceph_decode_need and ceph_encode_need
+
+Git-commit: 76aa542fb90e3e91edb1146d10ca7cf2cae8e7e9
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+Given a large n, the bounds check (*p + n > end) can be bypassed due to
+pointer wraparound.  A safer check is (n > end - *p).
+
+[elder@dreamhost.com: inverted test and renamed ceph_has_room()]
+
+Signed-off-by: Xi Wang <xi.wang@gmail.com>
+Reviewed-by: Alex Elder <elder@dreamhost.com>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ include/linux/ceph/decode.h |    9 +++++++--
+ 1 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/ceph/decode.h b/include/linux/ceph/decode.h
+index c5b6939..ecf324e 100644
+--- a/include/linux/ceph/decode.h
++++ b/include/linux/ceph/decode.h
+@@ -45,9 +45,14 @@ static inline void ceph_decode_copy(void **p, void *pv, size_t n)
+ /*
+  * bounds check input.
+  */
++static inline int ceph_has_room(void **p, void *end, size_t n)
++{
++	return end >= *p && n <= end - *p;
++}
++
+ #define ceph_decode_need(p, end, n, bad)		\
+ 	do {						\
+-		if (unlikely(*(p) + (n) > (end))) 	\
++		if (!likely(ceph_has_room(p, end, n)))	\
+ 			goto bad;			\
+ 	} while (0)
+ 
+@@ -166,7 +171,7 @@ static inline void ceph_encode_string(void **p, void *end,
+ 
+ #define ceph_encode_need(p, end, n, bad)		\
+ 	do {						\
+-		if (unlikely(*(p) + (n) > (end))) 	\
++		if (!likely(ceph_has_room(p, end, n)))	\
+ 			goto bad;			\
+ 	} while (0)
+ 
+-- 
+1.7.3.4
+

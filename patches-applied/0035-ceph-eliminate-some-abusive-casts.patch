@@ -1,0 +1,48 @@
+From: Alex Elder <elder@dreamhost.com>
+Date: Mon, 23 Jan 2012 15:49:27 -0600
+Subject: [PATCH 35/124] ceph: eliminate some abusive casts
+
+Git-commit: 99f0f3b2c4be15784bb4ede33b5f2c3f7861dba7
+Patch-mainline: v3.4
+References: FATE#312404
+
+This fixes some spots where a type cast to (void *) was used as
+as a universal type hiding mechanism.  Instead, properly cast the
+type to the intended target type.
+
+Signed-off-by: Alex Elder <elder@newdream.net>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/messenger.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index 09a412b..3917847 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -62,8 +62,8 @@ const char *ceph_pr_addr(const struct sockaddr_storage *ss)
+ {
+ 	int i;
+ 	char *s;
+-	struct sockaddr_in *in4 = (void *)ss;
+-	struct sockaddr_in6 *in6 = (void *)ss;
++	struct sockaddr_in *in4 = (struct sockaddr_in *) ss;
++	struct sockaddr_in6 *in6 = (struct sockaddr_in6 *) ss;
+ 
+ 	i = atomic_inc_return(&addr_str_seq) & ADDR_STR_COUNT_MASK;
+ 	s = addr_str[i];
+@@ -1112,8 +1112,8 @@ static void addr_set_port(struct sockaddr_storage *ss, int p)
+ static int ceph_pton(const char *str, size_t len, struct sockaddr_storage *ss,
+ 		char delim, const char **ipend)
+ {
+-	struct sockaddr_in *in4 = (void *)ss;
+-	struct sockaddr_in6 *in6 = (void *)ss;
++	struct sockaddr_in *in4 = (struct sockaddr_in *) ss;
++	struct sockaddr_in6 *in6 = (struct sockaddr_in6 *) ss;
+ 
+ 	memset(ss, 0, sizeof(*ss));
+ 
+-- 
+1.7.3.4
+

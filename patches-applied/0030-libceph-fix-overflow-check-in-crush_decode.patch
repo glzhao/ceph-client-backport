@@ -1,0 +1,38 @@
+From: Xi Wang <xi.wang@gmail.com>
+Date: Thu, 16 Feb 2012 11:55:48 -0500
+Subject: [PATCH 30/124] libceph: fix overflow check in crush_decode()
+
+Git-commit: 64486697771cbe219fffcb5c8e2ed9ca4fdf086c
+Patch-mainline: v3.4
+References: FATE#312404
+
+The existing overflow check (n > ULONG_MAX / b) didn't work, because
+n = ULONG_MAX / b would both bypass the check and still overflow the
+allocation size a + n * b.
+
+The correct check should be (n > (ULONG_MAX - a) / b).
+
+Signed-off-by: Xi Wang <xi.wang@gmail.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/osdmap.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/net/ceph/osdmap.c b/net/ceph/osdmap.c
+index fd863fe..29ad46e 100644
+--- a/net/ceph/osdmap.c
++++ b/net/ceph/osdmap.c
+@@ -283,7 +283,8 @@ static struct crush_map *crush_decode(void *pbyval, void *end)
+ 		ceph_decode_32_safe(p, end, yes, bad);
+ #if BITS_PER_LONG == 32
+ 		err = -EINVAL;
+-		if (yes > ULONG_MAX / sizeof(struct crush_rule_step))
++		if (yes > (ULONG_MAX - sizeof(*r))
++			  / sizeof(struct crush_rule_step))
+ 			goto bad;
+ #endif
+ 		r = c->rules[i] = kmalloc(sizeof(*r) +
+-- 
+1.7.3.4
+

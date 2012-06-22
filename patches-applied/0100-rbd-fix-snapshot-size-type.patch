@@ -1,0 +1,54 @@
+From: Josh Durgin <josh.durgin@dreamhost.com>
+Date: Mon, 5 Dec 2011 18:25:13 -0800
+Subject: [PATCH 100/124] rbd: fix snapshot size type
+
+Git-commit: 3591538fb272d2432d112d47d7e0ddd0be4cded2
+Patch-mainline: v3.5-rc1
+References: FATE#312404
+
+Snapshot sizes should be the same type as regular image sizes. This
+only affects their displayed size in sysfs, not the reported size of
+an actual block device sizes.
+
+Signed-off-by: Josh Durgin <josh.durgin@dreamhost.com>
+Reviewed-by: Alex Elder <elder@dreamhost.com>
+Reviewed-by: Yehuda Sadeh <yehuda@hq.newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ drivers/block/rbd.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
+index 4a0a829..8359796 100644
+--- a/drivers/block/rbd.c
++++ b/drivers/block/rbd.c
+@@ -141,7 +141,7 @@ struct rbd_request {
+ struct rbd_snap {
+ 	struct	device		dev;
+ 	const char		*name;
+-	size_t			size;
++	u64			size;
+ 	struct list_head	node;
+ 	u64			id;
+ };
+@@ -1935,7 +1935,7 @@ static ssize_t rbd_snap_size_show(struct device *dev,
+ {
+ 	struct rbd_snap *snap = container_of(dev, struct rbd_snap, dev);
+ 
+-	return sprintf(buf, "%zd\n", snap->size);
++	return sprintf(buf, "%llu\n", (unsigned long long)snap->size);
+ }
+ 
+ static ssize_t rbd_snap_id_show(struct device *dev,
+@@ -1944,7 +1944,7 @@ static ssize_t rbd_snap_id_show(struct device *dev,
+ {
+ 	struct rbd_snap *snap = container_of(dev, struct rbd_snap, dev);
+ 
+-	return sprintf(buf, "%llu\n", (unsigned long long) snap->id);
++	return sprintf(buf, "%llu\n", (unsigned long long)snap->id);
+ }
+ 
+ static DEVICE_ATTR(snap_size, S_IRUGO, rbd_snap_size_show, NULL);
+-- 
+1.7.3.4
+

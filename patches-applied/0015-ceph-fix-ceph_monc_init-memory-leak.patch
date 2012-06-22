@@ -1,0 +1,55 @@
+From: Noah Watkins <noahwatkins@gmail.com>
+Date: Mon, 12 Sep 2011 14:51:58 -0700
+Subject: [PATCH 15/124] ceph: fix ceph_monc_init memory leak
+
+Git-commit: 49d9224c047f23089c49a6749609447abd09ee03
+Patch-mainline: v3.2
+References: FATE#312404
+
+failure clean up does not consider ceph_auth_init.
+
+Signed-off-by: Noah Watkins <noahwatkins@gmail.com>
+Signed-off-by: Sage Weil <sage@newdream.net>
+Signed-off-by: Guangliang Zhao <gzhao@suse.com>
+---
+ net/ceph/mon_client.c |   10 +++++++---
+ 1 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/net/ceph/mon_client.c b/net/ceph/mon_client.c
+index af2ef30..0b62dea 100644
+--- a/net/ceph/mon_client.c
++++ b/net/ceph/mon_client.c
+@@ -759,8 +759,10 @@ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
+ 	/* authentication */
+ 	monc->auth = ceph_auth_init(cl->options->name,
+ 				    cl->options->key);
+-	if (IS_ERR(monc->auth))
+-		return PTR_ERR(monc->auth);
++	if (IS_ERR(monc->auth)) {
++		err = PTR_ERR(monc->auth);
++		goto out_con;
++	}
+ 	monc->auth->want_keys =
+ 		CEPH_ENTITY_TYPE_AUTH | CEPH_ENTITY_TYPE_MON |
+ 		CEPH_ENTITY_TYPE_OSD | CEPH_ENTITY_TYPE_MDS;
+@@ -771,7 +773,7 @@ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
+ 				     sizeof(struct ceph_mon_subscribe_ack),
+ 				     GFP_NOFS, true);
+ 	if (!monc->m_subscribe_ack)
+-		goto out_con;
++		goto out_auth;
+ 
+ 	monc->m_subscribe = ceph_msg_new(CEPH_MSG_MON_SUBSCRIBE, 96, GFP_NOFS,
+ 					 true);
+@@ -809,6 +811,8 @@ out_subscribe:
+ 	ceph_msg_put(monc->m_subscribe);
+ out_subscribe_ack:
+ 	ceph_msg_put(monc->m_subscribe_ack);
++out_auth:
++	ceph_auth_destroy(monc->auth);
+ out_con:
+ 	monc->con->ops->put(monc->con);
+ out_monmap:
+-- 
+1.7.3.4
+
